@@ -1,0 +1,20 @@
+{
+  "_note": "TEMPLATE ONLY. The real account_reference.json is gitignored (kept local, never committed). NON-SECRET reference only: never store passwords, PINs, API keys, or account numbers anywhere.",
+  "last_reviewed": "YYYY-MM-DD",
+  "accounts": [
+    {
+      "platform": "Your broker",
+      "type": "What you can buy there",
+      "purpose": "What this account is for",
+      "status": "planned | open",
+      "fees_note": "Commission and minimums"
+    }
+  ],
+  "future_platforms": [
+    {
+      "platform": "A platform you plan to use later",
+      "purpose": "Why",
+      "status": "future"
+    }
+  ]
+}

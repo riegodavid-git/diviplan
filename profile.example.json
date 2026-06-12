@@ -1,0 +1,48 @@
+{
+  "_note": "TEMPLATE ONLY. The real profile.json holds personal data and is gitignored (kept local, never committed). Copy this file to profile.json and fill in your own values.",
+  "last_updated": "YYYY-MM-DD",
+  "personal": {
+    "age": 0,
+    "country": "Your country",
+    "currency": "PHP",
+    "dependents": 0,
+    "life_stage": "e.g. student, employed, self-employed"
+  },
+  "income": {
+    "monthly_income_php": 0,
+    "income_notes": "Describe your income situation and when it may change."
+  },
+  "contributions": {
+    "weekly_php": 0,
+    "monthly_equivalent_php": 0,
+    "source": "Where the money comes from",
+    "notes": "Any context on the contribution amount."
+  },
+  "risk_tolerance": "low | medium | high",
+  "horizon_years": 0,
+  "goals": [
+    { "age": 0, "target_year": 0, "description": "What this milestone is for", "target_php": null }
+  ],
+  "preferences": {
+    "growth_vs_dividends": "e.g. balance of growth and some dividends",
+    "tax_efficiency_priority": "low | medium | high"
+  },
+  "target_allocation": {
+    "strategy": "Plan 2.1: Max Growth, Trusted Optimizer (88% global all-world / 12% PH REITs)",
+    "drift_flag_threshold_pp": 5,
+    "sleeves": [
+      {
+        "name": "Global equity (growth engine, all-world)",
+        "target_pct": 88,
+        "starting_vehicle": "VT (Vanguard Total World Stock ETF) via a broker that custodies in your own name",
+        "future_plan": "Migrate to an Irish-domiciled accumulating all-world ETF (e.g. VWRA) once larger transfers are economical."
+      },
+      {
+        "name": "Local REITs (income satellite)",
+        "target_pct": 12,
+        "composition": "Split across a couple of quality REITs for sector diversification.",
+        "notes": "High-yield income, reinvested. Interest-rate sensitive; size it as a satellite, not the core."
+      }
+    ]
+  }
+}

@@ -1,4 +1,10 @@
 .claude/
 _data_check.js
+_banner_check.png
 Thumbs.db
 desktop.ini
+
+# Personal data: kept local, never committed. Templates ship as *.example.json
+profile.json
+holdings.json
+account_reference.json

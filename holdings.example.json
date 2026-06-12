@@ -1,0 +1,10 @@
+{
+  "_note": "TEMPLATE ONLY. The real holdings.json holds your actual positions and money and is gitignored (kept local, never committed). Copy this file to holdings.json to start fresh.",
+  "base_currency": "PHP",
+  "status": "No positions yet. When you make a buy, record the ticker/fund, units, price, and date here.",
+  "positions": [],
+  "_schema_note": "positions[]: {ticker, name, sleeve: global|areit|creit, units, avg_price_php, cost_php, last_price_php, value_php, price_as_of}. transactions[]: {date, type: buy|sell|dividend_reinvest, ticker, units, price_php, amount_php, fees_php, note}. dividends_received[]: {date, ticker, gross_php, withheld_php, net_php, reinvested}. value_history[]: {date, invested_php, value_php} appended once per cycle.",
+  "transactions": [],
+  "dividends_received": [],
+  "value_history": []
+}
