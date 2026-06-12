@@ -1,1 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" width="1200" height="260"><rect width="1200" height="260" rx="18" fill="#131314"/><rect x="1.5" y="1.5" width="1197" height="257" rx="16.5" fill="none" stroke="#4d4635"/><path d="M760 200 L850 140 L920 170 L1010 90 L1080 115 L1150 55" fill="none" stroke="#f2ca50" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><circle cx="1150" cy="55" r="9" fill="#f2ca50"/><path d="M760 235 L850 185 L920 205 L1010 150 L1080 165 L1150 120" fill="none" stroke="#4de082" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/><text x="64" y="118" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="58" font-weight="700" fill="#e5e2e3">DiviPlan</text><text x="64" y="155" font-family="Consolas, Menlo, monospace" font-size="17" letter-spacing="6" fill="#f2ca50">PORTFOLIO INTELLIGENCE</text><text x="64" y="200" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="19" fill="#99907c">A personal investment journey, started at 24. Advised by an eight-role AI team in Claude Code.</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300" width="1200" height="300" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="goldArea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f2ca50" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#f2ca50" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="300" rx="20" fill="#131314"/>
+  <rect x="1.5" y="1.5" width="1197" height="297" rx="18.5" fill="none" stroke="#4d4635"/>
+
+  <!-- Left: identity -->
+  <text x="72" y="120" font-size="62" font-weight="700" fill="#e5e2e3">DiviPlan</text>
+  <text x="75" y="158" font-family="Consolas, Menlo, monospace" font-size="16" letter-spacing="7" fill="#f2ca50">PORTFOLIO INTELLIGENCE</text>
+  <text x="74" y="208" font-size="19" fill="#a89e88">A personal investment journey, started at 24.</text>
+  <text x="74" y="236" font-size="19" fill="#a89e88">Advised by an eight-role AI team in Claude Code.</text>
+
+  <!-- thin divider -->
+  <line x1="726" y1="52" x2="726" y2="248" stroke="#4d4635" stroke-width="1"/>
+
+  <!-- Right: contained growth panel -->
+  <rect x="762" y="52" width="372" height="196" rx="14" fill="#1c1b1c"/>
+  <rect x="762.5" y="52.5" width="371" height="195" rx="13.5" fill="none" stroke="#4d4635"/>
+  <text x="784" y="80" font-family="Consolas, Menlo, monospace" font-size="11" letter-spacing="3" fill="#99907c">GROWTH · COMPOUNDING</text>
+
+  <!-- baseline -->
+  <line x1="784" y1="214" x2="1112" y2="214" stroke="#3a352a" stroke-width="1"/>
+
+  <!-- gold area + line (the engine) -->
+  <path d="M784 196 L830 176 L876 184 L922 146 L968 156 L1014 116 L1060 126 L1106 84 L1106 214 L784 214 Z" fill="url(#goldArea)"/>
+  <polyline points="784,196 830,176 876,184 922,146 968,156 1014,116 1060,126 1106,84" fill="none" stroke="#f2ca50" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="1106" cy="84" r="6.5" fill="#f2ca50"/>
+  <circle cx="1106" cy="84" r="11" fill="none" stroke="#f2ca50" stroke-opacity="0.35" stroke-width="2"/>
+
+  <!-- green line (the dividend satellite) -->
+  <polyline points="784,206 858,198 922,190 1014,172 1106,150" fill="none" stroke="#4de082" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+</svg>
