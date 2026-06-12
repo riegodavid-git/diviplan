@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DiviPlan · Portfolio Intelligence</title>
+<meta name="description" content="A personal investment dashboard: 88% global equity (VT) and 12% Philippine REITs, advised by an 8-role AI team running in Claude Code. Informational only, not licensed financial advice.">
+<meta name="theme-color" content="#131314">
+<meta property="og:title" content="DiviPlan · Portfolio Intelligence">
+<meta property="og:description" content="My investment journey, started at 24: global index core, PH REIT income satellite, and an AI advisory team keeping watch.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23131314'/%3E%3Cpath d='M12 44 L26 32 L36 38 L52 18' fill='none' stroke='%23f2ca50' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='52' cy='18' r='4.5' fill='%23f2ca50'/%3E%3C/svg%3E">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet">
+<script>
+  // Tailwind config: Luminous Equity tokens (from Mockups/Design Templates)
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "surface": "#131314",
+          "surface-dim": "#131314",
+          "surface-bright": "#39393a",
+          "surface-container-lowest": "#0e0e0f",
+          "surface-container-low": "#1c1b1c",
+          "surface-container": "#201f20",
+          "surface-container-high": "#2a2a2b",
+          "surface-container-highest": "#353436",
+          "surface-variant": "#353436",
+          "on-surface": "#e5e2e3",
+          "on-surface-variant": "#d0c5af",
+          "outline": "#99907c",
+          "outline-variant": "#4d4635",
+          "surface-tint": "#e9c349",
+          "primary": "#f2ca50",
+          "on-primary": "#3c2f00",
+          "primary-container": "#d4af37",
+          "on-primary-container": "#554300",
+          "on-primary-fixed": "#241a00",
+          "secondary": "#4de082",
+          "on-secondary": "#003919",
+          "secondary-container": "#00b55d",
+          "on-secondary-container": "#003e1c",
+          "tertiary": "#ffbbd9",
+          "on-tertiary": "#620040",
+          "tertiary-container": "#ff8fc6",
+          "error": "#ffb4ab",
+          "on-error": "#690005",
+          "error-container": "#93000a",
+          "on-error-container": "#ffdad6",
+          "background": "#131314",
+          "on-background": "#e5e2e3"
+        },
+        borderRadius: { "DEFAULT": "0.5rem", "lg": "0.75rem", "xl": "1rem", "2xl": "1.5rem", "full": "9999px" },
+        spacing: { "base": "4px", "xs": "8px", "sm": "16px", "md": "24px", "lg": "40px", "xl": "64px", "gutter": "24px", "margin-mobile": "16px", "margin-desktop": "48px" },
+        fontFamily: {
+          "display": ["Hanken Grotesk", "sans-serif"],
+          "headline": ["Hanken Grotesk", "sans-serif"],
+          "body": ["Inter", "sans-serif"],
+          "mono": ["JetBrains Mono", "monospace"]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  /* ---- Fallback (no-CDN) base so an offline open stays readable ---- */
+  body { background-color: #131314; color: #e5e2e3; font-family: 'Inter', system-ui, sans-serif; }
+  ::selection { background: rgba(242,202,80,0.3); }
+
+  /* ---- Glass cards & glow (from template) ---- */
+  .glass-card {
+    background: rgba(26, 26, 28, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top-color: rgba(255, 255, 255, 0.14);
+    border-left-color: rgba(255, 255, 255, 0.14);
+    transition: border-color .3s cubic-bezier(.4,0,.2,1), box-shadow .3s cubic-bezier(.4,0,.2,1), transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .glass-card:hover { border-color: rgba(212,175,55,.30); box-shadow: 0 0 28px rgba(212,175,55,.06); }
+  .glow-green { filter: drop-shadow(0 0 8px rgba(77,224,130,.40)); }
+  .glow-gold  { filter: drop-shadow(0 0 8px rgba(212,175,55,.45)); }
+  .glow-red   { filter: drop-shadow(0 0 8px rgba(255,180,171,.40)); }
+  .text-glow-gold { text-shadow: 0 0 18px rgba(242,202,80,.35); }
+
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .nav-active .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
+
+  /* ---- Scrollbar ---- */
+  .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #131314; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #353436; border-radius: 10px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #4d4635; }
+
+  /* ---- Shimmer empty-state ---- */
+  @keyframes shimmer { 0% { background-position: -480px 0; } 100% { background-position: 480px 0; } }
+  .shimmer {
+    background: linear-gradient(100deg, rgba(53,52,54,0) 30%, rgba(212,175,55,0.06) 50%, rgba(53,52,54,0) 70%);
+    background-size: 480px 100%;
+    animation: shimmer 2.4s infinite linear;
+  }
+  @keyframes grow-bar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .animate-bar { transform-origin: left; animation: grow-bar 1.1s cubic-bezier(.22,1,.36,1) forwards; }
+
+  /* ---- Range slider (gold) ---- */
+  input[type=range] { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 999px;
+    background: linear-gradient(to right, #f2ca50 var(--pct,30%), #353436 var(--pct,30%)); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: #f2ca50; border: 3px solid #131314; box-shadow: 0 0 10px rgba(242,202,80,.6); cursor: pointer; }
+  input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: #f2ca50;
+    border: 3px solid #131314; box-shadow: 0 0 10px rgba(242,202,80,.6); cursor: pointer; }
+
+  .seg-btn { transition: all .2s; }
+  section[data-section] { display: none; }
+  section[data-section].active { display: block; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased lg:flex lg:overflow-hidden">
+
+<!-- ===================== SIDEBAR (desktop) ===================== -->
+<aside class="hidden lg:flex flex-col h-screen sticky top-0 p-4 gap-2 bg-surface-container border-r border-outline-variant w-64 shrink-0">
+  <div class="flex items-center gap-3 mb-4 px-2 pt-2">
+    <div class="w-11 h-11 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+      <span class="material-symbols-outlined text-on-primary-fixed">trending_up</span>
+    </div>
+    <div>
+      <h2 class="font-display text-[17px] font-bold text-primary leading-tight">DiviPlan</h2>
+      <p class="font-mono text-[11px] text-on-surface-variant" id="side-invested">₱0 invested</p>
+    </div>
+  </div>
+  <nav class="flex-1 flex flex-col gap-1" id="side-nav"><!-- nav links injected --></nav>
+</aside>
+
+<!-- ===================== MAIN ===================== -->
+<main class="flex-1 lg:h-screen lg:overflow-y-auto custom-scrollbar flex flex-col pb-24 lg:pb-0">
+
+  <!-- Top header -->
+  <header class="sticky top-0 z-40 bg-surface-container-lowest/85 backdrop-blur-md border-b border-outline-variant">
+    <div class="flex justify-between items-center gap-4 px-5 lg:px-12 py-4 max-w-[1440px] mx-auto w-full">
+      <div class="min-w-0">
+        <p class="font-mono text-[10px] uppercase tracking-[0.15em] text-on-surface-variant">Portfolio Intelligence</p>
+        <h1 class="font-display text-xl lg:text-2xl font-bold text-on-surface truncate" id="header-title">Overview</h1>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20 text-xs font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-secondary glow-green"></span><span id="status-pill">Allocation set</span>
+        </span>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high border border-outline-variant text-xs font-mono text-on-surface-variant">
+          <span class="material-symbols-outlined text-[15px]">event</span><span id="updated-chip">–</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="flex-1 px-5 lg:px-12 py-6 lg:py-8 max-w-[1440px] mx-auto w-full">
+
+    <!-- ============ OVERVIEW ============ -->
+    <section data-section="overview" class="active space-y-6">
+      <!-- KPIs -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="kpi-grid"></div>
+
+      <!-- Next-step / digest strip -->
+      <div id="overview-callouts" class="grid grid-cols-1 lg:grid-cols-3 gap-4"></div>
+
+      <!-- Forecast + Allocation -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 xl:col-span-8 glass-card rounded-2xl p-6">
+          <div class="flex flex-wrap justify-between items-start gap-4 mb-5">
+            <div>
+              <h3 class="font-headline text-lg font-semibold">Growth Forecast</h3>
+              <p class="text-on-surface-variant text-sm">Projected balance from weekly contributions · <span class="text-on-surface-variant">scenario, not prediction</span></p>
+            </div>
+            <div class="flex gap-1.5" id="rate-buttons"></div>
+          </div>
+          <div class="grid grid-cols-3 gap-3 mb-5">
+            <div class="rounded-xl bg-surface-container-high/60 border border-outline-variant/60 p-3">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Age 35 · 2037</p>
+              <p class="font-display text-lg font-bold text-on-surface" id="proj-35">–</p>
+            </div>
+            <div class="rounded-xl bg-surface-container-high/60 border border-outline-variant/60 p-3">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Age 45 · 2047</p>
+              <p class="font-display text-lg font-bold text-secondary" id="proj-45">–</p>
+            </div>
+            <div class="rounded-xl bg-surface-container-high/60 border border-outline-variant/60 p-3">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Of which contributed</p>
+              <p class="font-display text-lg font-bold text-on-surface-variant" id="proj-contrib">–</p>
+            </div>
+          </div>
+          <div class="h-64 relative"><canvas id="forecastChart"></canvas></div>
+          <div class="mt-5 pt-4 border-t border-outline-variant/50">
+            <div class="flex justify-between items-center text-sm mb-2">
+              <label for="contribSlider" class="text-on-surface-variant">What if I contribute <span class="font-mono text-primary" id="contribLabel">₱5,000</span>/week?</label>
+              <button id="contribReset" class="text-xs text-on-surface-variant hover:text-primary transition">Reset</button>
+            </div>
+            <input type="range" id="contribSlider" min="1000" max="20000" step="500" value="5000" class="w-full">
+            <p class="text-[11px] text-on-surface-variant mt-2">Flat contribution assumed; in reality this should rise sharply once you're employed after graduation, so these scenarios are conservative.</p>
+          </div>
+        </div>
+
+        <div class="col-span-12 xl:col-span-4 glass-card rounded-2xl p-6 flex flex-col">
+          <h3 class="font-headline text-lg font-semibold mb-4">Target Allocation</h3>
+          <div class="relative h-44 flex items-center justify-center mb-4">
+            <canvas id="allocChart"></canvas>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span class="font-display text-2xl font-bold text-on-surface leading-none">88<span class="text-on-surface-variant text-lg"> / </span>12</span>
+              <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant mt-1">Equity / REITs</span>
+            </div>
+          </div>
+          <div class="space-y-3" id="alloc-bars"></div>
+        </div>
+      </div>
+
+      <!-- Invested vs Value + Holdings -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 xl:col-span-5 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-1">Invested vs Value</h3>
+          <p class="text-on-surface-variant text-sm mb-4">Cost basis against market value over time</p>
+          <div class="h-56 relative" id="valueChartWrap"><canvas id="valueChart"></canvas></div>
+        </div>
+        <div class="col-span-12 xl:col-span-7 glass-card rounded-2xl overflow-hidden">
+          <div class="p-6 border-b border-outline-variant flex justify-between items-center">
+            <h3 class="font-headline text-lg font-semibold">Holdings</h3>
+            <span class="text-xs font-mono text-on-surface-variant" id="holdings-count">0 positions</span>
+          </div>
+          <div class="overflow-x-auto custom-scrollbar"><table class="w-full text-left text-sm">
+            <thead class="bg-surface-container-low">
+              <tr class="font-mono text-[11px] uppercase tracking-wider text-on-surface-variant">
+                <th class="px-6 py-3 font-medium">Sleeve / Asset</th>
+                <th class="px-6 py-3 font-medium">Type</th>
+                <th class="px-6 py-3 font-medium text-right">Target</th>
+                <th class="px-6 py-3 font-medium text-right">Value</th>
+              </tr>
+            </thead>
+            <tbody id="holdings-body" class="divide-y divide-outline-variant/30"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- The World You Own (via VT) -->
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 xl:col-span-5 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-1">The World You Own</h3>
+          <p class="text-on-surface-variant text-sm mb-4">Country weights inside VT, the 88% sleeve · <span id="world-asof" class="font-mono text-xs"></span></p>
+          <div class="grid grid-cols-3 gap-3 mb-5">
+            <div class="rounded-xl bg-surface-container-high/60 border border-outline-variant/60 p-3">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Countries</p>
+              <p class="font-display text-lg font-bold text-on-surface" id="world-count">60+</p>
+            </div>
+            <div class="rounded-xl bg-surface-container-high/60 border border-outline-variant/60 p-3">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Companies</p>
+              <p class="font-display text-lg font-bold text-on-surface">~9,900</p>
+            </div>
+            <div class="rounded-xl bg-surface-container-high/60 border border-outline-variant/60 p-3">
+              <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Largest slice</p>
+              <p class="font-display text-lg font-bold text-primary" id="world-top">–</p>
+            </div>
+          </div>
+          <div class="space-y-3" id="world-bars"></div>
+          <p class="text-[11px] text-on-surface-variant mt-4 pt-3 border-t border-outline-variant/50" id="world-note"></p>
+        </div>
+        <div class="col-span-12 xl:col-span-7 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-1">How the World Has Shifted</h3>
+          <p class="text-on-surface-variant text-sm mb-4">Share of world stock market value, 1900 to today · approximate; weights float with prices, no one rebalances them</p>
+          <div class="h-64 relative"><canvas id="worldFlowChart"></canvas></div>
+          <p class="text-[11px] text-on-surface-variant mt-3">In 1989 Japan was 45% of the world and the US just 33%; a world-index holder rode both transitions without a single trade. Whoever leads the next 40 years, VT already holds them. Sources: UBS/DMS Global Investment Returns Yearbook, MSCI, Finaeon.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ GAME PLAN ============ -->
+    <section data-section="gameplan" class="space-y-6">
+      <div class="glass-card rounded-2xl p-6 lg:p-8">
+        <span class="inline-block font-mono text-[10px] uppercase tracking-[0.15em] px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 mb-3">College Game Plan · Jun 2026 → ~late 2027</span>
+        <h2 class="font-display text-2xl font-bold mb-2">Build the habit, not the balance.</h2>
+        <p class="text-on-surface-variant max-w-3xl" id="gameplan-intro"></p>
+      </div>
+      <div class="grid grid-cols-12 gap-6">
+        <div class="col-span-12 lg:col-span-8">
+          <div class="relative pl-4 before:absolute before:left-[26px] before:top-2 before:bottom-2 before:w-[2px] before:bg-outline-variant" id="phase-timeline"></div>
+        </div>
+        <div class="col-span-12 lg:col-span-4 space-y-6">
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-headline text-lg font-semibold mb-1">By graduation</h3>
+            <p class="font-display text-3xl font-bold text-primary text-glow-gold mt-3">≈ ₱390,000</p>
+            <p class="text-sm text-on-surface-variant mt-2" id="grad-note"></p>
+          </div>
+          <div class="glass-card rounded-2xl p-6">
+            <h3 class="font-headline text-lg font-semibold mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">flag</span>Milestones</h3>
+            <ul class="space-y-3" id="milestones"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INCOME ============ -->
+    <section data-section="income" class="space-y-6">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <div>
+              <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Portfolio Yield</p>
+              <p class="font-display text-4xl font-bold text-primary text-glow-gold mt-1" id="yield-big">–</p>
+            </div>
+            <span class="material-symbols-outlined text-primary">percent</span>
+          </div>
+          <div class="mt-5 space-y-2 text-sm" id="yield-sub"></div>
+        </div>
+        <div class="col-span-12 lg:col-span-8 glass-card rounded-2xl p-6">
+          <div class="flex justify-between items-start mb-4">
+            <div>
+              <h3 class="font-headline text-lg font-semibold">Projected Quarterly REIT Income</h3>
+              <p class="text-on-surface-variant text-sm">Gross dividends · 10% withholding deducted at source</p>
+            </div>
+          </div>
+          <div class="h-56 relative" id="incomeChartWrap"><canvas id="incomeChart"></canvas></div>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-5 space-y-4">
+          <h3 class="font-headline text-lg font-semibold px-1">REIT Sleeve (12%)</h3>
+          <div class="grid grid-cols-2 gap-4" id="reit-tiles"></div>
+          <div class="glass-card rounded-2xl p-5">
+            <p class="text-sm text-on-surface-variant flex items-start gap-2">
+              <span class="material-symbols-outlined text-primary text-[18px] pt-0.5">info</span>
+              <span>By law (RA 9856) PH REITs distribute ≥90% of income as dividends: yields are structurally high, paid quarterly. They're rate-sensitive: prices fall when bond yields rise. Treat as a satellite, not the core.</span>
+            </p>
+          </div>
+        </div>
+        <div class="col-span-12 lg:col-span-7 glass-card rounded-2xl overflow-hidden">
+          <div class="p-6 border-b border-outline-variant flex justify-between items-center">
+            <h3 class="font-headline text-lg font-semibold">Dividends Received</h3>
+            <span class="text-xs font-mono text-on-surface-variant" id="div-count">0 payouts</span>
+          </div>
+          <div id="dividends-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ INVESTMENT LOG ============ -->
+    <section data-section="invlog" class="space-y-6">
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="log-kpis"></div>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col">
+          <h3 class="font-headline text-lg font-semibold mb-1">Where your money went</h3>
+          <p class="text-on-surface-variant text-sm mb-5">Capital deployed by sleeve</p>
+          <div class="space-y-4" id="log-allocation"></div>
+        </div>
+        <div class="col-span-12 lg:col-span-8 glass-card rounded-2xl overflow-hidden">
+          <div class="p-6 border-b border-outline-variant flex justify-between items-center">
+            <div>
+              <h3 class="font-headline text-lg font-semibold">Transaction Ledger</h3>
+              <p class="text-on-surface-variant text-xs mt-0.5">Every peso in, every peso out</p>
+            </div>
+            <span class="text-xs font-mono text-on-surface-variant" id="log-count">0 entries</span>
+          </div>
+          <div class="overflow-x-auto custom-scrollbar" id="log-body"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RISK ============ -->
+    <section data-section="risk" class="space-y-6">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-4 glass-card rounded-2xl p-6 flex flex-col items-center">
+          <h3 class="font-headline text-lg font-semibold self-start mb-4">Risk Score</h3>
+          <div class="relative w-56 h-32 mb-2">
+            <svg viewBox="0 0 200 110" class="w-full h-full">
+              <path d="M20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#353436" stroke-width="14" stroke-linecap="round"/>
+              <path id="riskArc" d="M20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#4de082" stroke-width="14" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="251" class="glow-green" style="transition:stroke-dashoffset 1s ease"/>
+            </svg>
+            <div class="absolute inset-x-0 bottom-0 flex flex-col items-center">
+              <span class="font-display text-4xl font-bold" id="risk-score">–</span>
+              <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant" id="risk-label">not yet scored</span>
+            </div>
+          </div>
+          <p class="text-xs text-on-surface-variant text-center mt-3" id="risk-caption"></p>
+        </div>
+        <div class="col-span-12 lg:col-span-8 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-4">Risk Factors</h3>
+          <div class="space-y-3" id="risk-factors"></div>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-7 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-1">Allocation Drift</h3>
+          <p class="text-on-surface-variant text-sm mb-4">Current weight vs target · flagged when off by &gt;5pp</p>
+          <div class="space-y-4" id="drift-bars"></div>
+        </div>
+        <div class="col-span-12 lg:col-span-5 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-4">Known Risks <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant font-normal">· from research</span></h3>
+          <div class="space-y-3" id="known-risks"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ TAX ============ -->
+    <section data-section="tax" class="space-y-6">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-4 glass-card rounded-2xl p-6">
+          <div class="flex justify-between items-start mb-3">
+            <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant">Withholding Tax · YTD</p>
+            <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 text-[10px] font-mono">10% FLAT</span>
+          </div>
+          <p class="font-display text-4xl font-bold text-on-surface" id="tax-ytd">₱0.00</p>
+          <p class="text-sm text-on-surface-variant mt-3" id="tax-ytd-note">Auto-deducted by the REIT at source. Tracking begins with your first dividend.</p>
+        </div>
+        <div class="col-span-12 lg:col-span-8 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-4">PH Tax Mechanics</h3>
+          <div class="space-y-2" id="tax-rules"></div>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 border-primary/20">
+        <div class="flex items-start gap-4">
+          <div class="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-primary">savings</span>
+          </div>
+          <div>
+            <h3 class="font-headline text-base font-semibold mb-1">Tax-efficiency upgrade after graduation (~late 2027)</h3>
+            <p class="text-sm text-on-surface-variant max-w-3xl">Once employed, open <strong class="text-on-surface">IBKR</strong> and migrate the global core into an Irish-domiciled accumulating ETF (<span class="font-mono">VWRA</span> or <span class="font-mono">CSPX</span>): 15% dividend withholding instead of 30%, no US estate-tax exposure, and a lower fee than the PHP feeder fund.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RESEARCH ============ -->
+    <section data-section="research" class="space-y-6">
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="font-headline text-lg font-semibold mb-1 flex items-center gap-2"><span class="material-symbols-outlined text-primary">travel_explore</span>SCOUT Research Feed</h3>
+        <p class="text-on-surface-variant text-sm">Dated findings, each rated Low / Med / High materiality. Appended each cycle.</p>
+      </div>
+      <div class="space-y-5" id="research-feed"></div>
+    </section>
+
+    <!-- ============ PROFILE ============ -->
+    <section data-section="profile" class="space-y-6">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 lg:col-span-6 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">person</span>Investor</h3>
+          <div class="space-y-1" id="profile-rows"></div>
+        </div>
+        <div class="col-span-12 lg:col-span-6 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">autorenew</span>Contribution & Strategy</h3>
+          <div class="space-y-1" id="strategy-rows"></div>
+        </div>
+        <div class="col-span-12 glass-card rounded-2xl p-6">
+          <h3 class="font-headline text-lg font-semibold mb-4 flex items-center gap-2"><span class="material-symbols-outlined text-primary">account_balance</span>Accounts <span class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant font-normal">· non-secret reference</span></h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="account-cards"></div>
+          <p class="text-[11px] text-on-surface-variant mt-4 flex items-center gap-2"><span class="material-symbols-outlined text-[15px]">shield</span>No passwords, PINs, or account numbers are ever stored here.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-outline-variant bg-surface-container-lowest">
+    <div class="max-w-[1440px] mx-auto px-5 lg:px-12 py-6 flex justify-center items-center">
+      <p class="text-sm text-on-surface-variant">Informational only. Not licensed financial advice.</p>
+    </div>
+  </footer>
+</main>
+
+<!-- ===================== MOBILE BOTTOM NAV ===================== -->
+<nav class="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-surface-container/95 backdrop-blur-md border-t border-outline-variant">
+  <div class="flex items-stretch" id="mobile-nav"></div>
+</nav>
+
+<script>
+// ===== DATA START (regenerated each cycle from state files) =====
+const DATA = {
+  meta: {
+    generated: "2026-06-12",
+    lastCycleDate: null,
+    lastCycleHeadline: null,
+    status: "Plan 2.1 set (global sleeve rerouted to VT via GoTrade); no positions funded yet",
+    statusShort: "Plan 2.1 set",
+    nextStep: "Account verification in progress (1 to 2 days). Once approved: first AREIT board lot on DragonFi, then open GoTrade for the first VT buy. Report each buy (ticker, units, price, date) and holdings fill in here automatically.",
+    currency: "PHP"
+  },
+  profile: {
+    age: 24, country: "Philippines",
+    lifeStage: "College student · ~1.5 yrs to graduation (~late 2027)",
+    riskTolerance: "High", horizonYears: 21,
+    weeklyContribution: 5000, monthlyContribution: 21667, annualContribution: 260000,
+    contributionSource: "Half of the ₱10,000/week family allowance",
+    goals: [
+      { age: 35, year: 2037, label: "Financial cushion / safety net" },
+      { age: 45, year: 2047, label: "Kids' education / family needs" }
+    ]
+  },
+  allocation: {
+    strategy: "Plan 2.1: Max Growth, Trusted Optimizer (88 / 12)",
+    chosenOn: "2026-06-09", adjustedOn: "2026-06-11",
+    driftThresholdPp: 5,
+    sleeves: [
+      { key: "global", name: "Global equity (all-world)", short: "Global Equity", targetPct: 88, vehicle: "VT, Vanguard Total World ETF (~9,000 stocks)", platform: "GoTrade (custody: own-name account at Alpaca Securities, SIPC)", color: "#4de082", yieldPct: null },
+      { key: "areit",  name: "AREIT · Ayala Land REIT", short: "AREIT", targetPct: 7.2, group: "PH REITs · 60%", vehicle: "AREIT", platform: "DragonFi", color: "#f2ca50", yieldPct: 6.4 },
+      { key: "creit",  name: "CREIT · Citicore Renewables", short: "CREIT", targetPct: 4.8, group: "PH REITs · 40%", vehicle: "CREIT", platform: "DragonFi", color: "#d4af37", yieldPct: 6.3 }
+    ]
+  },
+  positions: [],          // { ticker, name, sleeve, units, avgPrice, costPhp, lastPrice, valuePhp, priceAsOf }
+  transactions: [],       // { date, type, ticker, units, pricePhp, amountPhp, feesPhp, note }
+  dividends: [],          // { date, ticker, grossPhp, withheldPhp, netPhp, reinvested }
+  valueHistory: [],       // { date, investedPhp, valuePhp }
+  risk: null,             // { score, previousScore, asOf, summary, factors:[{name, level, note}] }
+  knownRisks: [
+    { name: "REIT rate sensitivity", level: "med", note: "PH REIT prices fall when bond yields rise; a near-term drag (research 2026-06-09)." },
+    { name: "GoTrade operational friction", level: "med", note: "App-layer is a small Labuan fintech; reviews cite slow withdrawals/support. Shares sit in your own-name SIPC account at Alpaca Securities, so failure means hassle, not loss (verified 2026-06-11)." },
+    { name: "US-domiciled VT: estate-tax watch", level: "low", note: "US-situs assets above ~$60k face US estate tax for nonresidents. Hard rule: migrate to VWRA via IBKR at graduation, well before that line." },
+    { name: "US / AI concentration", level: "med", note: "Norway's fund warns of record concentration in a few US tech names; its stress test puts an AI correction at ~35% of fund value. All-world VT spreads but does not remove this." },
+    { name: "PHP / USD exposure", level: "low", note: "88% sits in a USD-denominated all-world ETF; peso weakness has historically helped returns, but it cuts both ways." }
+  ],
+  tax: {
+    withheldYtd: 0,
+    rules: [
+      { label: "REIT / local dividends", value: "10% final tax", note: "auto-withheld at source", tone: "primary" },
+      { label: "Selling PSE shares", value: "0.1% transaction tax", note: "cut from 0.6%, effective Jul 2025", tone: "secondary" },
+      { label: "Feeder fund (UITF) redemptions", value: "generally not income-taxed", note: "fallback parking only under Plan 2.1; verify current BIR treatment", tone: "secondary" },
+      { label: "VT dividends (US-domiciled)", value: "30% US withholding", note: "withheld at source, quarterly; reinvest the net. Estate-tax watch above ~$60k: migrate before that line", tone: "error" },
+      { label: "Irish-domiciled ETFs (future)", value: "15% withholding", note: "no US estate tax; the IBKR + VWRA route after graduation", tone: "primary" }
+    ]
+  },
+  gameplan: {
+    intro: "For the next ~18 months the peso amounts are small; the point is to install a system that runs for 20+ years once you're earning. Consistency beats optimization. The strategy is Plan 2.1, Max Growth Trusted Optimizer: 88% global equity (VT, all-world, via GoTrade) / 12% PH REITs (60% AREIT / 40% CREIT, via DragonFi), ₱5,000/week, 100% invested, strict monthly buys.",
+    gradNote: "~78 weeks × ₱5,000, plus growth: a real working portfolio and, more importantly, a habit you've proven you can keep. That habit is the actual asset.",
+    phases: [
+      { num: 0, title: "Setup", status: "current", blurb: "Do once, in the next 1–2 weeks.", items: [
+        "Open a DragonFi account (₱1,000 to start) for the REIT sleeve.",
+        "Open a GoTrade account for the global sleeve; you sign the Alpaca Customer Agreement, the US broker that holds your shares in your own name (SIPC, $500k).",
+        "Pick your contribution day, the day your allowance lands. Pay yourself the ₱5,000 first.",
+        "(Optional) Keep a tiny ₱2–3k cash buffer so a surprise expense never forces a sale.",
+        "Fallback rule: if GoTrade isn't verified within a month, park that month's global money in the BPI feeder fund (redemptions untaxed; cheaply reversible). Never let setup stall the habit."
+      ]},
+      { num: 1, title: "Monthly rhythm", status: "locked", blurb: "Every month, for all 18 months.", items: [
+        "~₱17,600 → VT on GoTrade (the 88% growth engine; fractional, the exact amount always fits).",
+        "~₱2,400 → REITs on DragonFi (60% AREIT / 40% CREIT). Board lots ≈ ₱3,200–3,800, so alternate: one month a CREIT lot, the next an AREIT lot.",
+        "Reinvest every dividend the moment it lands: REIT cash quarterly (net of 10% tax), VT dividends quarterly (net of 30% US withholding)."
+      ]},
+      { num: 2, title: "The discipline", status: "locked", blurb: "The part that actually decides the outcome.", items: [
+        "Move the ₱5,000 the instant the allowance arrives.",
+        "Don't watch prices daily; dips just mean cheaper shares.",
+        "Never sell the core: no timing, no panic; hold 10 to 20 years.",
+        "Raise contributions whenever you can; a peso invested at 24 is your most valuable peso.",
+        "No chasing hot stocks / crypto / 'guaranteed' tips / Signature Portfolio streaks; just the two sleeves."
+      ]},
+      { num: 3, title: "Check-ins", status: "locked", blurb: "With Claude, in this folder.", items: [
+        "Monthly: report what you bought → holdings + dashboard update.",
+        "Every ~2 weeks: a full research, risk, and forecast cycle, now including Institutional Watch (Norway GPFG, GPIF, Berkshire, 13F moves: what they're doing, why, and whether it matters for us).",
+        "Quarterly: rebalance check, steer fresh money to the underweight sleeve (don't sell); plus a deeper 13F-season institutional dive."
+      ]},
+      { num: 4, title: "Graduation: level up", status: "locked", blurb: "~late 2027, when income kicks in.", items: [
+        "Raise contributions hard; this is when the plan gets serious.",
+        "Build a real emergency fund (3–6 months) from salary, separate from investments.",
+        "Open IBKR → migrate VT into VWRA (Irish-domiciled all-world: 15% withholding, no US estate tax). Hard rule: before the GoTrade balance nears $60k.",
+        "Re-run the whole strategy with your real income and updated goals."
+      ]}
+    ],
+    milestones: [
+      { label: "DragonFi opened + first REIT board lot bought", done: false },
+      { label: "GoTrade opened + first VT buy", done: false },
+      { label: "First dividend received (and reinvested)", done: false },
+      { label: "Portfolio crosses ₱50,000", done: false },
+      { label: "Portfolio crosses ₱100,000", done: false },
+      { label: "Graduation → IBKR opened, VT migrated to VWRA, contributions raised", done: false }
+    ]
+  },
+  research: [
+    { date: "2026-06-11", title: "Security audit: what the giants do, and what can actually vaporize", source: "nbim.no · IPE · gpif.go.jp · sipc.org · Alpaca Customer Agreement (primary)",
+      items: [
+        { text: "Norway's $2T fund: ~70% equities, passively mirroring an all-world index of ~9,000 companies. Japan's GPIF ($1.9T): allocation locked for 5 years, mostly passive. The most security-obsessed money on earth is a boring, broad, consistent indexer.", materiality: "High" },
+        { text: "NBIM (Norway) warns of never-before-seen concentration in a few US/AI names; 54% of the fund is in the US; their stress test puts an AI correction at ~35% of fund value. Supports the all-world choice over pure S&P 500.", materiality: "High" },
+        { text: "Custody mechanics: index-fund assets are segregated at custodians and survive the provider's bankruptcy; US brokers carry SIPC ($500k/customer, non-US clients covered); PH shares sit at PDTC. What actually destroys 20-year outcomes: single stocks, leverage, fraud, panic selling, and compounding fees.", materiality: "High" },
+        { text: "GoTrade verified from primary documents: users sign the Alpaca Customer Agreement directly, so the account is in YOUR name at Alpaca Securities LLC (FINRA/SIPC). GoTrade failing = paperwork, not loss. Residual risk is operational friction.", materiality: "High" },
+        { text: "Berkshire: record ~$348B cash, rotated away from concentrated mega-caps; gold at all-time highs on central-bank buying. Read as a valuation caution flag, not a sell signal.", materiality: "Med" }
+      ]
+    },
+    { date: "2026-06-11", title: "Feeder fee confirmed 1.5%/yr; Signature Portfolios; 40-year trends", source: "bpi.com.ph (user-verified) · dragonfi.ph · PwC World in 2050 · HSBC · OECD",
+      items: [
+        { text: "BPI US Equity Index Feeder Fund trust fee confirmed at 1.5%/yr (plus ~0.4%/yr withholding inside SPY): ~1.9%/yr total drag. Scenario: roughly ₱3M off the age-45 goal if held 21 years. Triggered the reroute of the global sleeve to VT via GoTrade.", materiality: "High" },
+        { text: "DragonFi Signature Portfolios: 13 follow/copy baskets of PSE dividend stocks (research-team + creator-led). Strong but short, self-reported track records in a market that lost ~20% in 10 years. Verdict: free watchlist and education, not the core.", materiality: "Med" },
+        { text: "40-year megatrends: AI acceleration, energy transition, aging rich world vs young South/SE Asia, economic weight shifting East (India top-3 by mid-century; PH projected 16th-largest economy by 2050). An all-world fund self-adjusts to whichever wins.", materiality: "Med" }
+      ]
+    },
+    { date: "2026-06-09", title: "REIT picks for the 12% sleeve", source: "investingengineer.com · dailypik.com · Simply Wall St · stockanalysis.com",
+      items: [
+        { text: "Start the sleeve 60% AREIT (safest, most diversified single name) / 40% CREIT (the only non-property REIT, solar/renewables, for genuine sector diversification). Avoid DDMPR/FILRT (yield-trap risk) and VREIT/PREIT (illiquid).", materiality: "Med" },
+        { text: "Near-term headwind: rising PH bond yields drag REIT prices. REITs are rate-sensitive, so expect volatility.", materiality: "Med" }
+      ],
+      table: {
+        headers: ["REIT", "Sector", "~Yield", "Read"],
+        rows: [
+          ["AREIT", "Office + premium retail", "6.1–6.4%", "Largest, most diversified, best track record. Blue-chip anchor."],
+          ["CREIT", "Renewable energy / solar", "~6.3%", "Only non-property REIT; paid >100% of income 4 yrs running. Best diversifier."],
+          ["MREIT", "Office (townships)", "6–7%", "Solid; tenant stickiness via township model."],
+          ["RCR", "Office/BPO, nationwide", "~5.7%", "Largest by asset count, geographic spread."],
+          ["DDMPR", "Office", "8–9%", "Highest yield but quality/occupancy concerns. Higher risk."]
+        ]
+      }
+    },
+    { date: "2026-06-09", title: "PH REITs: why the yield, and the tax", source: "ALBURO Law · RA 9856 · Metrobank Wealth Insights",
+      items: [
+        { text: "By law PH-listed REITs must distribute ≥90% of distributable income → structurally high yields (~6–8%), paid quarterly.", materiality: "High" },
+        { text: "REIT cash dividends to a resident individual = 10% final withholding tax (the REIT withholds it; nothing more to file).", materiality: "Med" }
+      ]
+    },
+    { date: "2026-06-09", title: "DragonFi baskets, feeder funds & PSEi reality check", source: "dragonfi.ph · SCMP/Bloomberg · BPI KIIDS",
+      items: [
+        { text: "PSEi is down ~20% over the past 10 years, the worst-performing major benchmark tracked by Bloomberg. Avoiding FMETF/PSEi is correct.", materiality: "High" },
+        { text: "S&P 500 returned ~14.8% annualized over the 10 years to Dec 2025 (USD); higher in PHP terms due to peso depreciation.", materiality: "High" },
+        { text: "BPI US Equity Index Feeder Fund (Peso) tracks the S&P 500 by holding SPY. Fee figures conflict (0.55% TER vs 1.50% trust fee), so verify the exact class before buying.", materiality: "High" }
+      ]
+    },
+    { date: "2026-06-09", title: "Platforms & tax-efficient routes to global equity", source: "dragonfi.ph · interactivebrokers.com · Bogleheads NRA wiki",
+      items: [
+        { text: "DragonFi: 0.25% + 12% VAT commission, no minimum, ~₱1,000 to start. PSE stocks, REITs, PHP feeder funds, PERA. No direct US-listed ETF access.", materiality: "Med" },
+        { text: "Cheapest-to-most-convenient global exposure: Irish-domiciled ETF via IBKR (15% withholding, no estate tax) → US-domiciled ETF via GoTrade (0.03% fee but 30% withholding) → PHP feeder fund via DragonFi (most convenient, ~0.55–1.5% fee).", materiality: "High" }
+      ]
+    }
+  ],
+  accounts: [
+    { platform: "DragonFi", type: "PSE brokerage · stocks, REITs, PHP feeder funds, PERA", purpose: "PH REIT sleeve (AREIT/CREIT); BPI feeder fund kept only as fallback parking", status: "planned, not yet opened", note: "0.25% + 12% VAT commission · ~₱1,000 to start (Lite ₱0)" },
+    { platform: "GoTrade", type: "US stocks/ETFs app · custody at Alpaca Securities LLC (FINRA/SIPC, own-name account)", purpose: "Global sleeve: monthly fractional VT buys (~₱17.6k)", status: "planned, opening this week", note: "₱45/deposit + small FX spread · fractional from $1 · custody verified 2026-06-11" },
+    { platform: "IBKR", type: "Global broker", purpose: "Graduation home: migrate VT into VWRA (Irish-domiciled, 15% withholding, no US estate tax) before US-situs nears $60k", status: "future", note: "PH funding economics work for batched, larger transfers once salaried" }
+  ],
+  worldExposure: {
+    asOf: "2026-03-31",
+    source: "Vanguard VT fund document (F3141), Mar 31 2026",
+    countryCount: "60+",
+    note: "Weights are market-cap based and float with prices; VT never trades to adjust the ratio. 'Others' includes India (~2%), Australia, the Netherlands, and the Philippines (~0.1%): through VT you own slivers of Ayala, SM and BDO. Refreshed each cycle from Vanguard's fund document.",
+    countries: [
+      { name: "United States", pct: 61.1 },
+      { name: "Japan", pct: 6.0 },
+      { name: "United Kingdom", pct: 3.5 },
+      { name: "Canada", pct: 3.2 },
+      { name: "China", pct: 3.2 },
+      { name: "Taiwan", pct: 2.7 },
+      { name: "France", pct: 2.1 },
+      { name: "Switzerland", pct: 2.1 },
+      { name: "Germany", pct: 1.9 },
+      { name: "Korea", pct: 1.9 },
+      { name: "Others (50+ countries)", pct: 12.3 }
+    ],
+    history: {
+      years: ["1900","1910","1920","1930","1940","1950","1960","1970","1980","1989","2000","2010","2020","2026"],
+      series: [
+        { name: "United States", color: "#f2ca50", data: [15,19,28,40,41,50,68,66,50,33,49,42,57,63] },
+        { name: "Japan", color: "#4de082", data: [2,2,3,3,3,1,2,5,15,45,11,9,7,6] },
+        { name: "United Kingdom", color: "#99907c", data: [24,22,16,13,11,11,9,9,8,9,9,8,4,3.5] }
+      ]
+    }
+  }
+};
+// ===== DATA END =====
+
+// ===================== HELPERS =====================
+const PHP = "₱";
+const fmtPhp = v => PHP + Math.round(v).toLocaleString("en-PH");
+const fmtPhp2 = v => PHP + v.toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmtM = v => PHP + (v / 1e6).toFixed(2) + "M";
+const fmtMshort = v => PHP + (v / 1e6).toFixed(1) + "M";
+const el = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// Derived portfolio facts
+const D = {
+  invested: DATA.positions.reduce((s, p) => s + (p.costPhp || 0), 0),
+  value: DATA.positions.reduce((s, p) => s + (p.valuePhp || 0), 0),
+  funded: DATA.positions.length > 0
+};
+function sleeveValue(key) { return DATA.positions.filter(p => p.sleeve === key).reduce((s, p) => s + (p.valuePhp || 0), 0); }
+function currentPct(key) { return D.value > 0 ? sleeveValue(key) / D.value * 100 : null; }
+// Blended REIT yield weighted by 60/40 target
+const reitBlendedYield = (DATA.allocation.sleeves.find(s => s.key === "areit").yieldPct * 0.6
+                        + DATA.allocation.sleeves.find(s => s.key === "creit").yieldPct * 0.4);
+const estAnnualDividend = sleeveValue("areit") * (6.4 / 100) + sleeveValue("creit") * (6.3 / 100);
+
+// Future value of a flat annual contribution
+function fv(rate, years) { return years <= 0 ? 0 : DATA.profile.annualContribution * ((Math.pow(1 + rate, years) - 1) / rate); }
+
+const LEVEL = {
+  low:  { txt: "text-secondary", bg: "bg-secondary/10 border-secondary/20", label: "Low" },
+  med:  { txt: "text-primary",   bg: "bg-primary/10 border-primary/20",     label: "Med" },
+  high: { txt: "text-error",     bg: "bg-error/10 border-error/20",         label: "High" }
+};
+const MAT = { Low: "secondary", Med: "primary", High: "error" };
+
+// ===================== NAV =====================
+const SECTIONS = [
+  { id: "overview", label: "Overview",  short: "Home",   icon: "dashboard" },
+  { id: "gameplan", label: "Game Plan", short: "Plan",   icon: "school" },
+  { id: "income",   label: "Income",    short: "Income", icon: "payments" },
+  { id: "invlog",   label: "Investment Log", short: "Log", icon: "history" },
+  { id: "risk",     label: "Risk",      short: "Risk",   icon: "security" },
+  { id: "tax",      label: "Tax",       short: "Tax",    icon: "receipt_long" },
+  { id: "research", label: "Research",  short: "Notes",  icon: "travel_explore" },
+  { id: "profile",  label: "Profile",   short: "Profile",icon: "person" }
+];
+const chartInits = {};
+const initialized = {};
+
+function buildNav() {
+  el("side-nav").innerHTML = SECTIONS.map(s => `
+    <a href="#${s.id}" data-nav="${s.id}" class="nav-link flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-variant/60 transition-all">
+      <span class="material-symbols-outlined text-[22px]">${s.icon}</span>
+      <span class="text-sm font-medium">${s.label}</span>
+    </a>`).join("");
+  el("mobile-nav").innerHTML = SECTIONS.map(s => `
+    <a href="#${s.id}" data-nav="${s.id}" class="mnav-link flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-2 px-0.5 text-on-surface-variant transition-all">
+      <span class="material-symbols-outlined text-[21px]">${s.icon}</span>
+      <span class="text-[9px] font-medium tracking-tight">${s.short}</span>
+    </a>`).join("");
+}
+
+function showSection(id) {
+  if (!SECTIONS.some(s => s.id === id)) id = "overview";
+  document.querySelectorAll("section[data-section]").forEach(sec =>
+    sec.classList.toggle("active", sec.dataset.section === id));
+  el("header-title").textContent = SECTIONS.find(s => s.id === id).label;
+  document.querySelectorAll(".nav-link").forEach(a => {
+    const on = a.dataset.nav === id;
+    a.classList.toggle("nav-active", on);
+    a.classList.toggle("bg-primary-container", on);
+    a.classList.toggle("text-on-primary-container", on);
+    a.classList.toggle("font-semibold", on);
+    a.classList.toggle("text-on-surface-variant", !on);
+  });
+  document.querySelectorAll(".mnav-link").forEach(a => {
+    const on = a.dataset.nav === id;
+    a.classList.toggle("nav-active", on);
+    a.classList.toggle("text-primary", on);
+    a.classList.toggle("text-on-surface-variant", !on);
+  });
+  if (!initialized[id] && chartInits[id]) { chartInits[id](); initialized[id] = true; }
+  window.scrollTo(0, 0);
+  const main = document.querySelector("main"); if (main) main.scrollTop = 0;
+}
+window.addEventListener("hashchange", () => showSection(location.hash.replace("#", "")));
+
+// ===================== CHART.JS SETUP =====================
+let chartsOK = !!window.Chart;
+if (chartsOK) {
+  Chart.defaults.color = "#d0c5af";
+  Chart.defaults.font.family = "Inter, sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
+}
+// Inline plugin: glow the dataset flagged glow:true
+const glowPlugin = {
+  id: "glow",
+  beforeDatasetDraw(chart, args) {
+    const ds = chart.data.datasets[args.index];
+    if (ds && ds.glow) { const c = chart.ctx; c.save(); c.shadowColor = ds.borderColor; c.shadowBlur = 12; }
+  },
+  afterDatasetDraw(chart, args) {
+    const ds = chart.data.datasets[args.index];
+    if (ds && ds.glow) chart.ctx.restore();
+  }
+};
+// Inline plugin: dashed vertical markers at age 35 & 45
+const ageMarkers = {
+  id: "ageMarkers",
+  afterDraw(chart) {
+    if (!chart.scales.x || chart.config.options._noMarkers) return;
+    const { ctx, chartArea: { top, bottom } } = chart;
+    DATA.profile.goals.forEach(g => {
+      const x = chart.scales.x.getPixelForValue("age " + g.age);
+      if (x == null || isNaN(x)) return;
+      ctx.save();
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = "rgba(242,202,80,0.45)"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke();
+      ctx.setLineDash([]); ctx.fillStyle = "rgba(242,202,80,0.9)";
+      ctx.font = "600 10px 'JetBrains Mono', monospace"; ctx.textAlign = "center";
+      ctx.fillText("AGE " + g.age, x, top - 4);
+      ctx.restore();
+    });
+  }
+};
+function vGradient(ctx, color, topA, botA) {
+  const { chart } = ctx; const area = chart.chartArea; if (!area) return color;
+  const g = chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+  g.addColorStop(0, color.replace(")", `,${topA})`).replace("rgb", "rgba"));
+  g.addColorStop(1, color.replace(")", `,${botA})`).replace("rgb", "rgba"));
+  return g;
+}
+
+// ===================== OVERVIEW =====================
+let forecastChart, allocChart, valueChart;
+let curRate = 0.07, curWeekly = DATA.profile.weeklyContribution;
+const RATES = [0.05, 0.07, 0.10];
+
+function renderKpis() {
+  const cards = [
+    { label: "Total Value", icon: "account_balance_wallet", tone: "text-primary",
+      val: D.funded ? fmtPhp2(D.value) : "₱0.00", sub: D.funded ? "Market value" : "FIRST BUY PENDING", pill: !D.funded },
+    { label: "Principal", icon: "savings", tone: "text-on-surface",
+      val: D.funded ? fmtPhp2(D.invested) : "₱0.00", sub: D.funded ? "Cost basis, your money in" : "FIRST BUY PENDING", pill: !D.funded },
+    { label: "Weekly Contribution", icon: "autorenew", tone: "text-secondary",
+      val: fmtPhp(DATA.profile.weeklyContribution), sub: "≈ " + fmtPhp(DATA.profile.monthlyContribution) + " / mo", pill: false },
+    { label: "Est. Annual Dividend", icon: "calendar_month", tone: "text-on-surface",
+      val: estAnnualDividend > 0 ? fmtPhp(estAnnualDividend) : "₱0.00",
+      sub: estAnnualDividend > 0 ? "REIT sleeve, net of 10% tax est." : "Grows with your REIT sleeve", pill: false }
+  ];
+  el("kpi-grid").innerHTML = cards.map(c => `
+    <div class="glass-card rounded-xl p-5 flex flex-col gap-2">
+      <div class="flex justify-between items-center text-on-surface-variant">
+        <span class="font-mono text-[10px] uppercase tracking-wider">${c.label}</span>
+        <span class="material-symbols-outlined ${c.tone} text-[20px]">${c.icon}</span>
+      </div>
+      <div class="font-display text-2xl font-bold ${c.tone}">${c.val}</div>
+      ${c.pill
+        ? `<span class="inline-flex w-max items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">${c.sub}</span>`
+        : `<span class="text-xs text-on-surface-variant">${c.sub}</span>`}
+    </div>`).join("");
+}
+
+function renderCallouts() {
+  const next = `
+    <div class="glass-card rounded-xl p-5 lg:col-span-2 border-primary/20">
+      <div class="flex items-start gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+          <span class="material-symbols-outlined text-primary text-[20px]">rocket_launch</span>
+        </div>
+        <div>
+          <h3 class="font-headline font-semibold text-sm mb-1">Your next step</h3>
+          <p class="text-sm text-on-surface-variant">${esc(DATA.meta.nextStep || "Make your first contribution and report the buy; holdings fill in here automatically.")}</p>
+        </div>
+      </div>
+    </div>`;
+  const digest = DATA.meta.lastCycleDate ? `
+    <div class="glass-card rounded-xl p-5">
+      <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Latest digest · ${DATA.meta.lastCycleDate}</p>
+      <p class="text-sm text-on-surface">${esc(DATA.meta.lastCycleHeadline || "")}</p>
+    </div>` : `
+    <div class="glass-card rounded-xl p-5 flex flex-col justify-center">
+      <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant mb-1">Latest digest</p>
+      <p class="text-sm text-on-surface-variant">No cycles run yet. Your first full digest will appear here.</p>
+    </div>`;
+  el("overview-callouts").innerHTML = next + digest;
+}
+
+function renderAllocBars() {
+  el("alloc-bars").innerHTML = DATA.allocation.sleeves.map(s => {
+    const cur = currentPct(s.key);
+    const curTxt = cur == null ? "–" : cur.toFixed(1) + "%";
+    return `
+    <div>
+      <div class="flex justify-between items-center text-sm mb-1.5">
+        <span class="font-medium text-on-surface flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-sm" style="background:${s.color}"></span>${s.short}
+        </span>
+        <span class="font-mono text-on-surface-variant"><span class="text-on-surface">${curTxt}</span> / ${s.targetPct}%</span>
+      </div>
+      <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+        <div class="h-full rounded-full" style="width:${s.targetPct}%;background:${s.color}"></div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderHoldings() {
+  el("holdings-count").textContent = D.funded ? `${DATA.positions.length} position${DATA.positions.length > 1 ? "s" : ""}` : "first buy pending";
+  if (!D.funded) {
+    el("holdings-body").innerHTML = DATA.allocation.sleeves.map(s => `
+      <tr>
+        <td class="px-6 py-4">
+          <div class="font-semibold text-on-surface">${s.short}</div>
+          <div class="text-xs text-on-surface-variant">${esc(s.vehicle)}</div>
+        </td>
+        <td class="px-6 py-4"><span class="text-xs px-2.5 py-1 rounded-full ${s.key === "global" ? "bg-secondary/10 text-secondary border border-secondary/20" : "bg-primary/10 text-primary border border-primary/20"}">${s.group || "Global Equity"}</span></td>
+        <td class="px-6 py-4 text-right font-mono">${s.targetPct}%</td>
+        <td class="px-6 py-4 text-right"><span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant">PLANNED</span></td>
+      </tr>`).join("");
+    return;
+  }
+  el("holdings-body").innerHTML = DATA.positions.map(p => {
+    const w = D.value > 0 ? (p.valuePhp / D.value * 100).toFixed(1) : "0.0";
+    const sleeve = DATA.allocation.sleeves.find(s => s.key === p.sleeve) || {};
+    return `
+      <tr>
+        <td class="px-6 py-4"><div class="font-semibold text-on-surface">${esc(p.ticker)}</div><div class="text-xs text-on-surface-variant">${esc(p.name || "")}</div></td>
+        <td class="px-6 py-4"><span class="text-xs px-2.5 py-1 rounded-full bg-surface-variant text-on-surface-variant">${esc(sleeve.short || p.sleeve)}</span></td>
+        <td class="px-6 py-4 text-right font-mono">${w}%</td>
+        <td class="px-6 py-4 text-right font-semibold">${fmtPhp(p.valuePhp)}</td>
+      </tr>`;
+  }).join("");
+}
+
+function buildForecastData() {
+  const startAge = DATA.profile.age, endAge = 45;
+  const years = []; for (let a = startAge; a <= endAge; a++) years.push(a);
+  const labels = years.map(a => "age " + a);
+  const annual = curWeekly * 52;
+  const line = (rate, sel) => ({
+    label: Math.round(rate * 100) + "% / yr",
+    data: years.map(a => Math.round(annual * (rate <= 0 ? (a - startAge) : ((Math.pow(1 + rate, a - startAge) - 1) / rate)))),
+    borderColor: rate === 0.10 ? "#4de082" : rate === 0.07 ? "#f2ca50" : "#99907c",
+    borderWidth: sel ? 3 : 1.5, glow: sel, tension: 0.25, pointRadius: 0,
+    fill: sel ? { target: "origin" } : false,
+    backgroundColor: sel ? (ctx => vGradient(ctx, "rgb(242,202,80)", 0.22, 0)) : "transparent"
+  });
+  const datasets = RATES.map(r => line(r, r === curRate));
+  datasets.push({
+    label: "Contributions", data: years.map(a => Math.round(annual * (a - startAge))),
+    borderColor: "#d0c5af", borderWidth: 1.5, borderDash: [5, 4], tension: 0, pointRadius: 0, fill: false
+  });
+  return { labels, datasets, years, annual };
+}
+
+function updateForecastFigures() {
+  const annual = curWeekly * 52;
+  const at = age => Math.round(annual * ((Math.pow(1 + curRate, age - DATA.profile.age) - 1) / curRate));
+  el("proj-35").textContent = fmtM(at(35));
+  el("proj-45").textContent = fmtM(at(45));
+  el("proj-contrib").textContent = fmtM(annual * (45 - DATA.profile.age));
+}
+
+function renderRateButtons() {
+  el("rate-buttons").innerHTML = RATES.map(r => `
+    <button data-rate="${r}" class="seg-btn px-3 py-1.5 rounded-lg text-xs font-mono ${r === curRate ? "bg-primary-container text-on-primary-container font-semibold" : "bg-surface-variant text-on-surface-variant hover:text-on-surface"}">${Math.round(r * 100)}%</button>`).join("");
+  el("rate-buttons").querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    curRate = parseFloat(b.dataset.rate); renderRateButtons();
+    if (forecastChart) { const d = buildForecastData(); forecastChart.data.datasets = d.datasets; forecastChart.update(); }
+    updateForecastFigures();
+  }));
+}
+
+function initOverviewCharts() {
+  renderRateButtons();
+  updateForecastFigures();
+  if (!chartsOK) return;
+  const fd = buildForecastData();
+  forecastChart = new Chart(el("forecastChart"), {
+    type: "line", data: { labels: fd.labels, datasets: fd.datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+      layout: { padding: { top: 18 } },
+      plugins: {
+        legend: { labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, padding: 14 } },
+        tooltip: { backgroundColor: "#201f20", borderColor: "rgba(242,202,80,0.3)", borderWidth: 1, titleFont: { family: "JetBrains Mono" }, padding: 10, callbacks: { label: c => `${c.dataset.label}: ${fmtM(c.parsed.y)}` } }
+      },
+      scales: {
+        x: { ticks: { maxTicksLimit: 8, font: { family: "JetBrains Mono" } }, grid: { display: false } },
+        y: { ticks: { callback: v => PHP + (v / 1e6).toFixed(1) + "M" }, grid: { color: "rgba(255,255,255,0.05)" } }
+      }
+    },
+    plugins: [glowPlugin, ageMarkers]
+  });
+
+  allocChart = new Chart(el("allocChart"), {
+    type: "doughnut",
+    data: { labels: ["Global / US equity", "AREIT", "CREIT"],
+      datasets: [{ data: [88, 7.2, 4.8], backgroundColor: ["#4de082", "#f2ca50", "#d4af37"], borderColor: "#131314", borderWidth: 4, hoverOffset: 6 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: "72%",
+      plugins: { legend: { display: false }, tooltip: { backgroundColor: "#201f20", borderColor: "rgba(242,202,80,0.3)", borderWidth: 1, callbacks: { label: c => `${c.label}: ${c.parsed}%` } } } }
+  });
+
+  // The World You Own (VT country weights as ranked bars + long-run share history)
+  const WX = DATA.worldExposure;
+  if (WX) {
+    el("world-asof").textContent = "as of " + WX.asOf;
+    el("world-count").textContent = WX.countryCount;
+    el("world-note").textContent = WX.note;
+    const top = WX.countries[0];
+    el("world-top").textContent = `${top.name === "United States" ? "US" : top.name} ${top.pct}%`;
+    const wMax = Math.max(...WX.countries.map(c => c.pct));
+    const wBarColor = (c, i) => c.name.startsWith("Others") ? "rgba(255,255,255,0.16)" : (i === 0 ? "#f2ca50" : "rgba(242,202,80,0.5)");
+    el("world-bars").innerHTML = WX.countries.map((c, i) => `
+      <div>
+        <div class="flex justify-between items-center text-sm mb-1">
+          <span class="${i === 0 ? "font-medium text-on-surface" : "text-on-surface-variant"}">${c.name}</span>
+          <span class="font-mono ${i === 0 ? "text-primary" : "text-on-surface-variant"}">${c.pct.toFixed(1)}%</span>
+        </div>
+        <div class="h-1.5 w-full bg-surface-variant rounded-full overflow-hidden">
+          <div class="h-full rounded-full" style="width:${(c.pct / wMax * 100).toFixed(1)}%;background:${wBarColor(c, i)}"></div>
+        </div>
+      </div>`).join("");
+    new Chart(el("worldFlowChart"), {
+      type: "line",
+      data: { labels: WX.history.years,
+        datasets: WX.history.series.map((s, i) => ({ label: s.name, data: s.data, borderColor: s.color, backgroundColor: s.color, borderWidth: i === 0 ? 2.5 : 2, borderDash: i === 0 ? [] : (i === 1 ? [7, 4] : [2, 3]), tension: 0.35, pointRadius: 2.5, glow: i === 0 })) },
+      options: { responsive: true, maintainAspectRatio: false, _noMarkers: true, interaction: { mode: "index", intersect: false },
+        plugins: { legend: { labels: { boxWidth: 10, boxHeight: 10, usePointStyle: true, padding: 14 } },
+          tooltip: { backgroundColor: "#201f20", borderColor: "rgba(242,202,80,0.3)", borderWidth: 1, titleFont: { family: "JetBrains Mono" }, padding: 10, callbacks: { label: c => `${c.dataset.label}: ${c.parsed.y}% of world market` } } },
+        scales: { x: { ticks: { font: { family: "JetBrains Mono" } }, grid: { display: false } },
+          y: { min: 0, max: 75, ticks: { callback: v => v + "%" }, grid: { color: "rgba(255,255,255,0.05)" } } } },
+      plugins: [glowPlugin]
+    });
+  }
+
+  // Invested vs Value
+  const vw = el("valueChartWrap");
+  if (DATA.valueHistory.length === 0) {
+    vw.innerHTML = `
+      <div class="absolute inset-0 rounded-xl shimmer flex flex-col items-center justify-center text-center px-6">
+        <svg viewBox="0 0 100 40" preserveAspectRatio="none" class="absolute inset-x-6 bottom-8 h-16 opacity-20"><path d="M0 35 Q 25 30 50 18 T 100 4" fill="none" stroke="#f2ca50" stroke-width="1.5"/></svg>
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl mb-2">show_chart</span>
+        <p class="text-sm text-on-surface-variant relative">Fills in once your first buy is recorded; one snapshot is added each cycle.</p>
+      </div>`;
+    return;
+  }
+  valueChart = new Chart(el("valueChart"), {
+    type: "line",
+    data: { labels: DATA.valueHistory.map(h => h.date),
+      datasets: [
+        { label: "Value", data: DATA.valueHistory.map(h => h.valuePhp), borderColor: "#f2ca50", borderWidth: 2.5, glow: true, tension: 0.3, pointRadius: 0, fill: { target: "origin" }, backgroundColor: ctx => vGradient(ctx, "rgb(242,202,80)", 0.25, 0) },
+        { label: "Principal", data: DATA.valueHistory.map(h => h.investedPhp), borderColor: "#99907c", borderWidth: 1.5, borderDash: [5, 4], tension: 0.3, pointRadius: 0, fill: false }
+      ] },
+    options: { responsive: true, maintainAspectRatio: false, _noMarkers: true, interaction: { mode: "index", intersect: false },
+      plugins: { legend: { labels: { boxWidth: 10, usePointStyle: true, padding: 12 } }, tooltip: { backgroundColor: "#201f20", callbacks: { label: c => `${c.dataset.label}: ${fmtPhp(c.parsed.y)}` } } },
+      scales: { x: { grid: { display: false }, ticks: { font: { family: "JetBrains Mono" } } }, y: { ticks: { callback: v => fmtMshort(v) }, grid: { color: "rgba(255,255,255,0.05)" } } } },
+    plugins: [glowPlugin]
+  });
+}
+
+// slider
+function wireSlider() {
+  const sl = el("contribSlider"), lab = el("contribLabel");
+  const setFill = () => sl.style.setProperty("--pct", ((sl.value - sl.min) / (sl.max - sl.min) * 100) + "%");
+  setFill();
+  sl.addEventListener("input", () => {
+    curWeekly = parseInt(sl.value, 10); lab.textContent = fmtPhp(curWeekly); setFill();
+    if (forecastChart) { const d = buildForecastData(); forecastChart.data.datasets = d.datasets; forecastChart.update(); }
+    updateForecastFigures();
+  });
+  el("contribReset").addEventListener("click", () => {
+    curWeekly = DATA.profile.weeklyContribution; sl.value = curWeekly; lab.textContent = fmtPhp(curWeekly); setFill();
+    if (forecastChart) { const d = buildForecastData(); forecastChart.data.datasets = d.datasets; forecastChart.update(); }
+    updateForecastFigures();
+  });
+}
+
+// ===================== GAME PLAN =====================
+const PHASE_STATE = {
+  current: { ring: "bg-primary text-on-primary", icon: "hourglass_top", chip: "bg-primary/10 text-primary border-primary/20", dim: "" },
+  done:    { ring: "bg-secondary text-on-secondary", icon: "check", chip: "bg-secondary/10 text-secondary border-secondary/20", dim: "" },
+  locked:  { ring: "bg-surface-variant text-on-surface-variant border border-outline-variant", icon: "lock", chip: "bg-surface-variant text-on-surface-variant border-outline-variant", dim: "opacity-70" }
+};
+function renderGameplan() {
+  el("gameplan-intro").textContent = DATA.gameplan.intro;
+  el("grad-note").textContent = DATA.gameplan.gradNote;
+  el("phase-timeline").innerHTML = DATA.gameplan.phases.map(p => {
+    const st = PHASE_STATE[p.status];
+    return `
+    <div class="relative pl-16 pb-8 last:pb-0">
+      <div class="absolute left-2 top-1 w-9 h-9 rounded-full ${st.ring} flex items-center justify-center ring-8 ring-surface z-10">
+        <span class="material-symbols-outlined text-[18px]">${st.icon}</span>
+      </div>
+      <div class="glass-card rounded-2xl p-5 ${st.dim}">
+        <div class="flex items-center gap-3 mb-2 flex-wrap">
+          <span class="font-mono text-[10px] uppercase px-2.5 py-1 rounded-full border ${st.chip}">Phase ${String(p.num).padStart(2, "0")}</span>
+          <h4 class="font-headline text-lg font-semibold">${esc(p.title)}</h4>
+          ${p.status === "current" ? '<span class="font-mono text-[10px] text-primary uppercase tracking-wider">· you are here</span>' : ""}
+        </div>
+        <p class="text-sm text-on-surface-variant mb-3">${esc(p.blurb)}</p>
+        <ul class="space-y-2">
+          ${p.items.map(i => `<li class="flex items-start gap-2.5 text-sm text-on-surface"><span class="material-symbols-outlined text-[18px] ${p.status === "locked" ? "text-on-surface-variant" : "text-secondary"} pt-0.5">${p.status === "locked" ? "radio_button_unchecked" : "check_circle"}</span><span>${esc(i)}</span></li>`).join("")}
+        </ul>
+      </div>
+    </div>`;
+  }).join("");
+  el("milestones").innerHTML = DATA.gameplan.milestones.map(m => `
+    <li class="flex items-start gap-3 text-sm ${m.done ? "text-on-surface" : "text-on-surface-variant"}">
+      <span class="material-symbols-outlined text-[20px] ${m.done ? "text-primary glow-gold" : "text-outline"}">${m.done ? "check_circle" : "radio_button_unchecked"}</span>
+      <span>${esc(m.label)}</span>
+    </li>`).join("");
+}
+
+// ===================== INCOME =====================
+let incomeChart;
+function renderIncomeStatic() {
+  const pYield = D.value > 0 ? (estAnnualDividend / D.value * 100) : null;
+  el("yield-big").textContent = pYield == null ? "–" : pYield.toFixed(2) + "%";
+  el("yield-sub").innerHTML = `
+    <div class="flex justify-between"><span class="text-on-surface-variant">AREIT (60% of sleeve)</span><span class="font-mono text-on-surface">~6.4%</span></div>
+    <div class="flex justify-between"><span class="text-on-surface-variant">CREIT (40% of sleeve)</span><span class="font-mono text-on-surface">~6.3%</span></div>
+    <div class="flex justify-between pt-2 border-t border-outline-variant/50"><span class="text-on-surface-variant">Blended REIT yield</span><span class="font-mono text-primary">~${reitBlendedYield.toFixed(2)}%</span></div>
+    <p class="text-[11px] text-on-surface-variant pt-1">${D.value > 0 ? "Portfolio-level figure reflects the 12% REIT weighting." : "Portfolio yield appears once your REIT sleeve is funded."}</p>`;
+
+  el("reit-tiles").innerHTML = ["areit", "creit"].map(k => {
+    const s = DATA.allocation.sleeves.find(x => x.key === k);
+    const val = sleeveValue(k);
+    return `
+    <div class="glass-card rounded-xl p-4" style="background:linear-gradient(135deg, ${s.color}1a, rgba(26,26,28,.7))">
+      <div class="flex justify-between items-start">
+        <span class="font-display font-bold text-lg" style="color:${s.color}">${s.short}</span>
+        <span class="font-mono text-xs text-on-surface-variant">${s.yieldPct}%</span>
+      </div>
+      <p class="text-[11px] text-on-surface-variant mt-1">${k === "areit" ? "Office / retail anchor" : "Solar / renewables tilt"}</p>
+      <p class="font-display text-xl font-bold mt-3">${val > 0 ? fmtPhp(val) : '<span class="text-sm font-mono px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant">PLANNED</span>'}</p>
+      <p class="font-mono text-[10px] uppercase tracking-wider text-on-surface-variant mt-1">${s.group}</p>
+    </div>`;
+  }).join("");
+
+  // dividends list
+  if (DATA.dividends.length === 0) {
+    el("div-count").textContent = "0 payouts";
+    el("dividends-body").innerHTML = `
+      <div class="p-10 text-center">
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl mb-2">paid</span>
+        <p class="text-sm text-on-surface-variant">No dividends yet. Your first payout follows your first REIT board lot (REITs pay quarterly).</p>
+      </div>`;
+  } else {
+    el("div-count").textContent = `${DATA.dividends.length} payout${DATA.dividends.length > 1 ? "s" : ""}`;
+    el("dividends-body").innerHTML = `<table class="w-full text-left text-sm"><thead class="bg-surface-container-low"><tr class="font-mono text-[11px] uppercase tracking-wider text-on-surface-variant"><th class="px-6 py-3 font-medium">Date</th><th class="px-6 py-3 font-medium">Ticker</th><th class="px-6 py-3 font-medium text-right">Net</th><th class="px-6 py-3 font-medium text-right">Reinvested</th></tr></thead><tbody class="divide-y divide-outline-variant/30">${DATA.dividends.map(d => `<tr><td class="px-6 py-3 font-mono text-xs">${esc(d.date)}</td><td class="px-6 py-3 font-semibold">${esc(d.ticker)}</td><td class="px-6 py-3 text-right font-mono">${fmtPhp2(d.netPhp)}</td><td class="px-6 py-3 text-right">${d.reinvested ? '<span class="material-symbols-outlined text-secondary text-[18px]">check_circle</span>' : "–"}</td></tr>`).join("")}</tbody></table>`;
+  }
+}
+function initIncomeChart() {
+  if (!chartsOK) return;
+  const wrap = el("incomeChartWrap");
+  const funded = sleeveValue("areit") + sleeveValue("creit") > 0;
+  const labels = ["Q3 2026", "Q4 2026", "Q1 2027", "Q2 2027"];
+  let data, ghost = false;
+  if (funded) {
+    const perQ = (sleeveValue("areit") * 0.064 + sleeveValue("creit") * 0.063) / 4;
+    data = labels.map(() => Math.round(perQ));
+  } else { data = [40, 55, 48, 62]; ghost = true; }
+  incomeChart = new Chart(el("incomeChart"), {
+    type: "bar",
+    data: { labels, datasets: [{ data, backgroundColor: ghost ? "rgba(255,255,255,0.07)" : ["#f2ca50", "#f2ca50cc", "#f2ca5099", "#d4af37"], borderRadius: 6, borderSkipped: false }] },
+    options: { responsive: true, maintainAspectRatio: false, _noMarkers: true,
+      plugins: { legend: { display: false }, tooltip: { enabled: !ghost, backgroundColor: "#201f20", callbacks: { label: c => "Gross ≈ " + fmtPhp(c.parsed.y) } } },
+      scales: { x: { grid: { display: false }, ticks: { font: { family: "JetBrains Mono" } } }, y: { display: !ghost, ticks: { callback: v => fmtPhp(v) }, grid: { color: "rgba(255,255,255,0.05)" } } } }
+  });
+  if (ghost) {
+    const ov = document.createElement("div");
+    ov.className = "absolute inset-0 flex items-center justify-center text-center px-6 pointer-events-none";
+    ov.innerHTML = `<p class="text-sm text-on-surface-variant bg-surface/70 rounded-lg px-4 py-2 backdrop-blur-sm">Appears after your first REIT buy</p>`;
+    wrap.appendChild(ov);
+  }
+}
+
+// ===================== RISK =====================
+function renderRisk() {
+  const r = DATA.risk;
+  if (r) {
+    el("risk-score").textContent = r.score + "/10";
+    el("risk-label").textContent = r.summary || "overall";
+    el("risk-caption").textContent = r.previousScore != null ? `Was ${r.previousScore}/10 last cycle · scored ${r.asOf || ""}` : `Scored ${r.asOf || ""}`;
+    // arc: higher score = more risk = redder & fuller
+    const frac = Math.min(1, r.score / 10);
+    const arc = el("riskArc");
+    arc.style.strokeDashoffset = 251 * (1 - frac);
+    const col = r.score >= 7 ? "#ffb4ab" : r.score >= 4 ? "#f2ca50" : "#4de082";
+    arc.setAttribute("stroke", col); arc.className.baseVal = "";
+  } else {
+    el("risk-caption").innerHTML = 'Not yet scored. SENTINEL runs on your first full update cycle.';
+  }
+  const factors = (r && r.factors) || [
+    { name: "Concentration", level: null, note: "Single-fund equity core vs diversification" },
+    { name: "Volatility", level: null, note: "Equity + rate-sensitive REIT swings" },
+    { name: "PHP / USD exposure", level: null, note: "Peso vs USD-tracking S&P 500 feeder" },
+    { name: "Satellite / higher-risk share", level: null, note: "12% REIT sleeve proportion" }
+  ];
+  el("risk-factors").innerHTML = factors.map(f => {
+    const lv = f.level ? LEVEL[f.level] : null;
+    return `
+    <div class="flex items-center gap-4 p-3 rounded-xl bg-surface-container-high/50 border border-outline-variant/40">
+      <div class="w-9 h-9 rounded-lg ${lv ? lv.bg : "bg-surface-variant"} border flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[18px] ${lv ? lv.txt : "text-on-surface-variant"}">${f.level === "high" ? "warning" : f.level === "med" ? "error" : "shield"}</span>
+      </div>
+      <div class="flex-1 min-w-0"><p class="font-medium text-sm text-on-surface">${esc(f.name)}</p><p class="text-xs text-on-surface-variant">${esc(f.note)}</p></div>
+      <span class="text-[10px] font-mono px-2.5 py-1 rounded-full border ${lv ? lv.bg + " " + lv.txt : "bg-surface-variant text-on-surface-variant border-outline-variant"}">${lv ? lv.label : "–"}</span>
+    </div>`;
+  }).join("");
+
+  // drift bars (incl AREIT/CREIT 60/40 inside the REIT sleeve)
+  el("drift-bars").innerHTML = DATA.allocation.sleeves.map(s => {
+    const cur = currentPct(s.key);
+    const drift = cur == null ? null : (cur - s.targetPct);
+    const flag = drift != null && Math.abs(drift) > DATA.allocation.driftThresholdPp;
+    return `
+    <div>
+      <div class="flex justify-between items-center text-sm mb-1.5">
+        <span class="font-medium text-on-surface flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm" style="background:${s.color}"></span>${s.short}</span>
+        <span class="flex items-center gap-2">
+          <span class="font-mono text-on-surface-variant"><span class="text-on-surface">${cur == null ? "–" : cur.toFixed(1) + "%"}</span> / ${s.targetPct}%</span>
+          ${flag ? '<span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-error/10 text-error border border-error/20">&gt;5pp DRIFT</span>' : ""}
+        </span>
+      </div>
+      <div class="relative h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+        <div class="h-full rounded-full animate-bar" style="width:${cur == null ? s.targetPct : Math.min(100, cur)}%;background:${cur == null ? "rgba(153,144,124,.4)" : s.color}"></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  el("known-risks").innerHTML = DATA.knownRisks.map(k => {
+    const lv = LEVEL[k.level];
+    return `
+    <div class="p-3 rounded-xl bg-surface-container-high/50 border border-outline-variant/40">
+      <div class="flex justify-between items-center mb-1">
+        <p class="font-medium text-sm text-on-surface">${esc(k.name)}</p>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border ${lv.bg} ${lv.txt}">${lv.label}</span>
+      </div>
+      <p class="text-xs text-on-surface-variant">${esc(k.note)}</p>
+    </div>`;
+  }).join("");
+}
+
+// ===================== TAX =====================
+function renderTax() {
+  el("tax-ytd").textContent = fmtPhp2(DATA.tax.withheldYtd);
+  if (DATA.tax.withheldYtd > 0) el("tax-ytd-note").textContent = "Total 10% final tax withheld on dividends this year, already deducted at source.";
+  const tone = { primary: "text-primary bg-primary/10 border-primary/20", secondary: "text-secondary bg-secondary/10 border-secondary/20", error: "text-error bg-error/10 border-error/20" };
+  el("tax-rules").innerHTML = DATA.tax.rules.map(r => `
+    <div class="flex items-center justify-between gap-4 p-3 rounded-xl bg-surface-container-high/40 border border-outline-variant/40">
+      <div class="min-w-0"><p class="text-sm font-medium text-on-surface">${esc(r.label)}</p><p class="text-xs text-on-surface-variant">${esc(r.note)}</p></div>
+      <span class="text-xs font-mono px-3 py-1 rounded-full border shrink-0 ${tone[r.tone]}">${esc(r.value)}</span>
+    </div>`).join("");
+}
+
+// ===================== INVESTMENT LOG =====================
+function tickerSleeve(tk) {
+  tk = (tk || "").toUpperCase();
+  if (tk === "AREIT") return "areit";
+  if (tk === "CREIT") return "creit";
+  return "global"; // BPIEF / feeder fund and anything else = growth sleeve
+}
+const TXTYPE = {
+  buy:               { label: "Buy",        cls: "text-secondary bg-secondary/10 border-secondary/20", icon: "add" },
+  sell:              { label: "Sell",       cls: "text-error bg-error/10 border-error/20",             icon: "remove" },
+  dividend_reinvest: { label: "Reinvest",   cls: "text-primary bg-primary/10 border-primary/20",       icon: "autorenew" }
+};
+function renderInvLog() {
+  const tx = DATA.transactions.slice().sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  const sum = f => tx.reduce((s, t) => s + (f(t) || 0), 0);
+  const deployed   = sum(t => (t.type === "buy" || t.type === "dividend_reinvest") ? t.amountPhp : 0);
+  const reinvested = sum(t => t.type === "dividend_reinvest" ? t.amountPhp : 0);
+  const sold       = sum(t => t.type === "sell" ? t.amountPhp : 0);
+  const fees       = sum(t => t.feesPhp);
+  const freshCash  = deployed - reinvested - sold;
+
+  // KPIs
+  const kpis = [
+    { label: "Total Deployed", icon: "savings", tone: "text-primary",  val: fmtPhp2(deployed),   sub: "All buys incl. reinvested" },
+    { label: "Out-of-Pocket",  icon: "account_balance_wallet", tone: "text-on-surface", val: fmtPhp2(freshCash), sub: "Your own cash in" },
+    { label: "Reinvested",     icon: "autorenew", tone: "text-secondary", val: fmtPhp2(reinvested), sub: "Dividends compounded back" },
+    { label: "Fees Paid",      icon: "receipt", tone: "text-on-surface", val: fmtPhp2(fees), sub: tx.length + " transaction" + (tx.length === 1 ? "" : "s") }
+  ];
+  el("log-kpis").innerHTML = kpis.map(c => `
+    <div class="glass-card rounded-xl p-5 flex flex-col gap-2">
+      <div class="flex justify-between items-center text-on-surface-variant">
+        <span class="font-mono text-[10px] uppercase tracking-wider">${c.label}</span>
+        <span class="material-symbols-outlined ${c.tone} text-[20px]">${c.icon}</span>
+      </div>
+      <div class="font-display text-2xl font-bold ${c.tone}">${c.val}</div>
+      <span class="text-xs text-on-surface-variant">${c.sub}</span>
+    </div>`).join("");
+
+  // Where the money went (deployed by sleeve)
+  el("log-allocation").innerHTML = DATA.allocation.sleeves.map(s => {
+    const dep = tx.filter(t => (t.type === "buy" || t.type === "dividend_reinvest") && tickerSleeve(t.ticker) === s.key)
+                  .reduce((acc, t) => acc + t.amountPhp, 0);
+    const share = deployed > 0 ? (dep / deployed * 100) : 0;
+    return `
+    <div>
+      <div class="flex justify-between items-center text-sm mb-1.5">
+        <span class="font-medium text-on-surface flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-sm" style="background:${s.color}"></span>${s.short}</span>
+        <span class="font-mono text-on-surface-variant">${dep > 0 ? fmtPhp(dep) : "₱0"} <span class="text-on-surface-variant/60">· ${s.targetPct}% target</span></span>
+      </div>
+      <div class="h-2 w-full bg-surface-variant rounded-full overflow-hidden">
+        <div class="h-full rounded-full" style="width:${deployed > 0 ? Math.max(2, share) : 0}%;background:${s.color}"></div>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Ledger
+  el("log-count").textContent = tx.length + " " + (tx.length === 1 ? "entry" : "entries");
+  if (tx.length === 0) {
+    el("log-body").innerHTML = `
+      <div class="p-10 text-center">
+        <span class="material-symbols-outlined text-on-surface-variant text-3xl mb-2">savings</span>
+        <p class="text-sm text-on-surface-variant max-w-md mx-auto">No transactions yet. Every buy, sell, and reinvested dividend gets logged here, showing exactly where each peso went and a running total of your principal.</p>
+      </div>`;
+    return;
+  }
+  let running = 0;
+  const rows = tx.map(t => {
+    if (t.type === "sell") running -= t.amountPhp; else running += t.amountPhp;
+    const ty = TXTYPE[t.type] || TXTYPE.buy;
+    const sleeve = DATA.allocation.sleeves.find(s => s.key === tickerSleeve(t.ticker));
+    return `
+      <tr>
+        <td class="px-5 py-3 font-mono text-xs whitespace-nowrap">${esc(t.date)}</td>
+        <td class="px-5 py-3"><span class="text-[10px] font-mono px-2 py-0.5 rounded-full border ${ty.cls}">${ty.label}</span></td>
+        <td class="px-5 py-3"><span class="font-semibold text-on-surface">${esc(t.ticker)}</span><span class="block text-[11px] text-on-surface-variant">${esc(sleeve ? sleeve.short : "")}</span></td>
+        <td class="px-5 py-3 text-right font-mono text-xs">${t.units != null ? t.units : "–"}</td>
+        <td class="px-5 py-3 text-right font-mono text-xs">${t.pricePhp != null ? fmtPhp2(t.pricePhp) : "–"}</td>
+        <td class="px-5 py-3 text-right font-mono ${t.type === "sell" ? "text-error" : "text-on-surface"}">${t.type === "sell" ? "−" : ""}${fmtPhp2(t.amountPhp)}</td>
+        <td class="px-5 py-3 text-right font-mono text-xs text-on-surface-variant">${t.feesPhp ? fmtPhp2(t.feesPhp) : "–"}</td>
+        <td class="px-5 py-3 text-right font-mono font-semibold">${fmtPhp(running)}</td>
+      </tr>
+      ${t.note ? `<tr><td colspan="8" class="px-5 pb-3 -mt-1 text-[11px] text-on-surface-variant italic">${esc(t.note)}</td></tr>` : ""}`;
+  }).join("");
+  el("log-body").innerHTML = `
+    <table class="w-full text-left text-sm">
+      <thead class="bg-surface-container-low">
+        <tr class="font-mono text-[11px] uppercase tracking-wider text-on-surface-variant">
+          <th class="px-5 py-3 font-medium">Date</th>
+          <th class="px-5 py-3 font-medium">Type</th>
+          <th class="px-5 py-3 font-medium">Asset</th>
+          <th class="px-5 py-3 font-medium text-right">Units</th>
+          <th class="px-5 py-3 font-medium text-right">Price</th>
+          <th class="px-5 py-3 font-medium text-right">Amount</th>
+          <th class="px-5 py-3 font-medium text-right">Fees</th>
+          <th class="px-5 py-3 font-medium text-right">Running total</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-outline-variant/30">${rows}</tbody>
+    </table>`;
+}
+
+// ===================== RESEARCH =====================
+function renderResearch() {
+  el("research-feed").innerHTML = DATA.research.map(r => `
+    <article class="glass-card rounded-2xl p-6">
+      <div class="flex items-center justify-between gap-4 mb-3 flex-wrap">
+        <h3 class="font-headline text-lg font-semibold">${esc(r.title)}</h3>
+        <span class="font-mono text-[11px] text-on-surface-variant flex items-center gap-1.5"><span class="material-symbols-outlined text-[15px]">event</span>${esc(r.date)}</span>
+      </div>
+      <ul class="space-y-3 mb-4">
+        ${r.items.map(i => {
+          const c = MAT[i.materiality];
+          return `<li class="flex items-start gap-3 text-sm">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded-full border shrink-0 mt-0.5 bg-${c}/10 text-${c} border-${c}/20">${i.materiality}</span>
+            <span class="text-on-surface">${esc(i.text)}</span></li>`;
+        }).join("")}
+      </ul>
+      ${r.table ? `<div class="overflow-x-auto custom-scrollbar mb-3"><table class="w-full text-left text-xs"><thead class="text-on-surface-variant font-mono uppercase tracking-wider"><tr>${r.table.headers.map(h => `<th class="py-2 pr-4 font-medium">${esc(h)}</th>`).join("")}</tr></thead><tbody class="divide-y divide-outline-variant/30">${r.table.rows.map(row => `<tr>${row.map((cell, i) => `<td class="py-2 pr-4 ${i === 0 ? "font-semibold text-on-surface" : "text-on-surface-variant"}">${esc(cell)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : ""}
+      <p class="font-mono text-[10px] text-on-surface-variant pt-3 border-t border-outline-variant/40">Sources: ${esc(r.source)}</p>
+    </article>`).join("");
+}
+
+// ===================== PROFILE =====================
+function row(label, value) {
+  return `<div class="flex justify-between items-center gap-4 py-2.5 border-b border-outline-variant/30 last:border-0"><span class="text-sm text-on-surface-variant">${esc(label)}</span><span class="text-sm font-medium text-on-surface text-right">${value}</span></div>`;
+}
+function renderProfile() {
+  const p = DATA.profile;
+  el("profile-rows").innerHTML =
+    row("Age", p.age) + row("Country", p.country) + row("Life stage", esc(p.lifeStage)) +
+    row("Risk tolerance", `<span class="text-primary">${esc(p.riskTolerance)}</span>`) + row("Horizon", p.horizonYears + " years") +
+    row("Goal · age 35 (2037)", esc(p.goals[0].label)) + row("Goal · age 45 (2047)", esc(p.goals[1].label));
+  el("strategy-rows").innerHTML =
+    row("Weekly contribution", fmtPhp(p.weeklyContribution)) + row("Monthly equivalent", "≈ " + fmtPhp(p.monthlyContribution)) +
+    row("Source", esc(p.contributionSource)) +
+    row("Strategy", esc(DATA.allocation.strategy)) +
+    row("Equity / REITs", "88% / 12%") + row("REIT split", "60% AREIT / 40% CREIT") +
+    row("Chosen", DATA.allocation.chosenOn + " (adj. " + DATA.allocation.adjustedOn + ")");
+  el("account-cards").innerHTML = DATA.accounts.map(a => `
+    <div class="p-4 rounded-xl bg-surface-container-high/40 border border-outline-variant/40">
+      <div class="flex items-center justify-between mb-2">
+        <span class="font-headline font-semibold text-on-surface">${esc(a.platform)}</span>
+        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full ${a.status.includes("planned") ? "bg-primary/10 text-primary border border-primary/20" : "bg-surface-variant text-on-surface-variant border border-outline-variant"}">${esc(a.status)}</span>
+      </div>
+      <p class="text-xs text-on-surface-variant mb-1">${esc(a.type)}</p>
+      <p class="text-sm text-on-surface">${esc(a.purpose)}</p>
+      ${a.note ? `<p class="font-mono text-[10px] text-on-surface-variant mt-2">${esc(a.note)}</p>` : ""}
+    </div>`).join("");
+}
+
+// ===================== BOOT =====================
+function boot() {
+  // header / sidebar status
+  el("side-invested").textContent = fmtPhp(D.invested) + " invested";
+  el("updated-chip").textContent = DATA.meta.generated;
+  el("status-pill").textContent = DATA.meta.statusShort;
+
+  buildNav();
+  // register lazy chart inits
+  chartInits.overview = initOverviewCharts;
+  chartInits.income = initIncomeChart;
+
+  // static renders (cheap, do upfront)
+  renderKpis(); renderCallouts(); renderAllocBars(); renderHoldings();
+  renderGameplan(); renderIncomeStatic(); renderInvLog(); renderRisk(); renderTax(); renderResearch(); renderProfile();
+  wireSlider();
+
+  showSection(location.hash.replace("#", "") || "overview");
+}
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Yield Map | DiviPlan Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0F0F10;
+            color: #e5e2e3;
+        }
+        .glass-card {
+            background: rgba(26, 26, 28, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .yield-glow-success {
+            box-shadow: 0px 0px 12px rgba(77, 224, 130, 0.2);
+        }
+        .yield-glow-primary {
+            box-shadow: 0px 0px 12px rgba(212, 175, 55, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 10px;
+        }
+        .chart-path-glow {
+            filter: drop-shadow(0px 4px 4px rgba(212, 175, 55, 0.4));
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#d0c5af",
+                      "on-tertiary": "#620040",
+                      "surface-container": "#201f20",
+                      "surface-container-lowest": "#0e0e0f",
+                      "surface-container-high": "#2a2a2b",
+                      "background": "#131314",
+                      "on-primary-fixed-variant": "#574500",
+                      "secondary-fixed": "#6dfe9c",
+                      "surface-bright": "#39393a",
+                      "tertiary-fixed-dim": "#ffafd3",
+                      "secondary-container": "#00b55d",
+                      "tertiary-fixed": "#ffd8e7",
+                      "secondary-fixed-dim": "#4de082",
+                      "outline": "#99907c",
+                      "on-tertiary-fixed-variant": "#85145a",
+                      "surface": "#131314",
+                      "secondary": "#4de082",
+                      "primary-fixed": "#ffe088",
+                      "on-tertiary-fixed": "#3d0026",
+                      "on-error": "#690005",
+                      "tertiary-container": "#ff8fc6",
+                      "on-surface": "#e5e2e3",
+                      "on-secondary-fixed": "#00210c",
+                      "surface-tint": "#e9c349",
+                      "on-tertiary-container": "#831258",
+                      "primary-fixed-dim": "#e9c349",
+                      "inverse-primary": "#735c00",
+                      "surface-container-low": "#1c1b1c",
+                      "outline-variant": "#4d4635",
+                      "tertiary": "#ffbbd9",
+                      "primary-container": "#d4af37",
+                      "on-secondary-container": "#003e1c",
+                      "on-primary": "#3c2f00",
+                      "primary": "#f2ca50",
+                      "inverse-surface": "#e5e2e3",
+                      "surface-variant": "#353436",
+                      "surface-dim": "#131314",
+                      "error-container": "#93000a",
+                      "on-secondary": "#003919",
+                      "on-secondary-fixed-variant": "#005227",
+                      "on-primary-container": "#554300",
+                      "inverse-on-surface": "#313031",
+                      "on-error-container": "#ffdad6",
+                      "error": "#ffb4ab",
+                      "on-primary-fixed": "#241a00",
+                      "surface-container-highest": "#353436",
+                      "on-background": "#e5e2e3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "lg": "40px",
+                      "gutter": "24px",
+                      "margin-desktop": "48px",
+                      "xs": "8px",
+                      "sm": "16px",
+                      "md": "24px",
+                      "xl": "64px",
+                      "margin-mobile": "16px",
+                      "base": "4px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Hanken Grotesk"],
+                      "body-md": ["Inter"],
+                      "label-mono": ["JetBrains Mono"],
+                      "headline-lg": ["Hanken Grotesk"],
+                      "display-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="font-body-md text-on-surface selection:bg-primary/30">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container border-r border-white/10 shadow-xl flex flex-col h-full py-md px-sm z-[60] hidden md:flex transition-all duration-300 ease-in-out">
+<div class="px-sm mb-lg">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-xl">D</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary leading-none">DiviPlan Pro</h1>
+<p class="text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">Wealth Intelligence</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 py-3 rounded-lg text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 py-3 rounded-lg text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>Performance</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 py-3 rounded-lg text-primary font-bold border-l-4 border-primary pl-4 bg-primary/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">map</span>
+<span>Yield Map</span>
+</a>
+<a class="flex items-center gap-3 py-3 rounded-lg text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm">security</span>
+<span>Risk Assessment</span>
+</a>
+<a class="flex items-center gap-3 py-3 rounded-lg text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm">receipt_long</span>
+<span>Tax Planner</span>
+</a>
+<a class="flex items-center gap-3 py-3 rounded-lg text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-sm">
+<button class="w-full py-3 px-4 bg-primary-container text-on-primary-container rounded-xl font-bold flex items-center justify-center gap-2 hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+<span>Upgrade to Pro</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<main class="md:ml-64 min-h-screen flex flex-col">
+<!-- Top Navigation -->
+<header class="w-full sticky top-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-sm">
+<div class="flex justify-between items-center px-md py-xs w-full max-w-[1440px] mx-auto">
+<div class="flex items-center gap-md">
+<div class="relative group">
+<span class="absolute inset-y-0 left-3 flex items-center text-on-surface-variant">
+<span class="material-symbols-outlined text-md">search</span>
+</span>
+<input class="bg-surface-container-lowest border-none rounded-full py-2 pl-10 pr-4 w-64 focus:ring-1 focus:ring-primary text-sm transition-all" placeholder="Search holdings..." type="text"/>
+</div>
+<div class="hidden lg:flex items-center gap-md ml-4">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-body-md text-sm" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-sm" href="#">Game Plan</a>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A professional headshot of a senior financial analyst in a dark tailored suit, set against a blurred corporate office background with cool blue and charcoal tones, conveying expertise and trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCp0hIhYGMtlKcP6B3ED4HwMbsaBW1bc32nFOIB8DVKnoCnTA8F3a8CPNaI4RzuEI3ikYHAyDB6y5aT-CTCan1mfLCNgtttm0WgEUNfBDjYN_y2Jv1wOfxcwxTwdUw9RA40GEzbRZTOsMNIbrznOxnE2ffoFyVBEHrXSHZGpKAqZdWY5ahoJHFZ3KtvuFlZpOMZrSOZbiZrqwfKpn8o4kQGZP6ITH30lEwjCsYcuacWD4wq56uoQZhHj3HS2TwVoMfLt1QBStn2AB5N"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="p-md lg:p-lg space-y-md">
+<!-- Page Header Area -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<span class="text-primary font-label-mono text-label-mono uppercase tracking-[0.2em] block mb-1">Portfolio Intelligence</span>
+<h2 class="font-headline-lg text-headline-lg text-white">Yield Map Explorer</h2>
+</div>
+<div class="flex gap-sm">
+<div class="bg-surface-container border border-white/10 rounded-lg p-1 flex">
+<button class="px-4 py-1.5 rounded-md text-xs font-bold bg-white/10 text-white">Monthly</button>
+<button class="px-4 py-1.5 rounded-md text-xs font-bold text-on-surface-variant hover:text-white transition-colors">Quarterly</button>
+</div>
+<button class="bg-primary px-4 py-1.5 rounded-lg text-on-primary text-xs font-bold flex items-center gap-2 hover:brightness-110">
+<span class="material-symbols-outlined text-[16px]">download</span> Export Report
+                    </button>
+</div>
+</div>
+<!-- Dashboard Bento Grid -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Summary Card: Current Yield -->
+<div class="col-span-12 lg:col-span-3 glass-card rounded-xl p-md flex flex-col justify-between yield-glow-primary">
+<div>
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-mono text-label-mono text-on-surface-variant">CURRENT PORTFOLIO YIELD</span>
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<div class="flex items-baseline gap-2">
+<h3 class="font-display-lg text-display-lg text-primary tracking-tighter">4.82%</h3>
+<span class="text-secondary text-sm font-bold flex items-center">
+<span class="material-symbols-outlined text-xs">arrow_upward</span>
+                                0.4%
+                            </span>
+</div>
+</div>
+<div class="mt-md pt-md border-t border-white/5 space-y-3">
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Yield on Cost</span>
+<span class="text-white font-bold">5.12%</span>
+</div>
+<div class="flex justify-between text-xs">
+<span class="text-on-surface-variant">Annual Payout</span>
+<span class="text-white font-bold">$12,480.00</span>
+</div>
+</div>
+</div>
+<!-- Treemap / Heatmap Card -->
+<div class="col-span-12 lg:col-span-9 glass-card rounded-xl p-md overflow-hidden min-h-[400px]">
+<div class="flex items-center justify-between mb-md">
+<h4 class="font-headline-lg text-xl text-white">Dividend Yield Distribution</h4>
+<div class="flex items-center gap-4 text-xs font-label-mono text-on-surface-variant">
+<div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-surface-container-high border border-white/5"></span> 0-2%</div>
+<div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#574500] border border-white/5"></span> 2-4%</div>
+<div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#d4af37] border border-white/5"></span> 4-6%</div>
+<div class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-[#f2ca50] border border-white/5"></span> 6%+</div>
+</div>
+</div>
+<!-- Simulated Treemap with Flex/Grid -->
+<div class="grid grid-cols-4 grid-rows-3 gap-2 h-72">
+<!-- High Yielders -->
+<div class="col-span-2 row-span-2 bg-primary/90 rounded-lg p-4 flex flex-col justify-between group cursor-pointer hover:brightness-110 transition-all border border-white/10 relative">
+<div class="flex justify-between">
+<span class="font-bold text-on-primary">SCHD</span>
+<span class="font-label-mono text-[10px] text-on-primary/70">3.4% Yield</span>
+</div>
+<span class="text-2xl font-bold text-on-primary">$45K</span>
+</div>
+<div class="col-span-1 row-span-1 bg-primary/70 rounded-lg p-3 flex flex-col justify-between group cursor-pointer hover:brightness-110 transition-all border border-white/10">
+<span class="font-bold text-on-primary text-sm">O</span>
+<span class="text-lg font-bold text-on-primary">5.8%</span>
+</div>
+<div class="col-span-1 row-span-2 bg-[#574500] rounded-lg p-4 flex flex-col justify-between border border-white/10 hover:brightness-110 transition-all cursor-pointer">
+<span class="font-bold text-primary">AAPL</span>
+<span class="text-xl font-bold text-white">$12K</span>
+</div>
+<div class="col-span-1 row-span-1 bg-[#85145a]/40 rounded-lg p-3 flex flex-col justify-between border border-white/10 hover:brightness-110 transition-all cursor-pointer">
+<span class="font-bold text-white text-xs">VZ</span>
+<span class="text-md font-bold text-white">7.2%</span>
+</div>
+<div class="col-span-1 row-span-1 bg-primary/40 rounded-lg p-3 flex flex-col justify-between border border-white/10 hover:brightness-110 transition-all cursor-pointer">
+<span class="font-bold text-white text-xs">JPM</span>
+<span class="text-md font-bold text-white">2.8%</span>
+</div>
+<div class="col-span-2 row-span-1 bg-[#2a2a2b] rounded-lg p-3 flex flex-col justify-between border border-white/10 hover:brightness-110 transition-all cursor-pointer">
+<div class="flex justify-between items-center">
+<span class="font-bold text-white text-xs">Portfolio Others</span>
+<span class="font-label-mono text-[10px] text-on-surface-variant">14 Holdings</span>
+</div>
+<div class="w-full bg-white/5 rounded-full h-1 mt-2">
+<div class="bg-primary h-full rounded-full" style="width: 65%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Monthly Dividend Calendar (Bar Chart) -->
+<div class="col-span-12 lg:col-span-8 glass-card rounded-xl p-md overflow-hidden">
+<div class="flex items-center justify-between mb-lg">
+<h4 class="font-headline-lg text-xl text-white">Projected Monthly Income</h4>
+<div class="flex gap-2">
+<span class="flex items-center gap-1 text-[10px] text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-primary"></span> Confirmed</span>
+<span class="flex items-center gap-1 text-[10px] text-on-surface-variant"><span class="w-2 h-2 rounded-full bg-white/10"></span> Projected</span>
+</div>
+</div>
+<div class="flex items-end justify-between h-56 px-sm relative">
+<!-- Background grid lines -->
+<div class="absolute inset-x-0 top-0 bottom-0 flex flex-col justify-between pointer-events-none opacity-5 px-sm">
+<div class="w-full border-t border-white"></div>
+<div class="w-full border-t border-white"></div>
+<div class="w-full border-t border-white"></div>
+<div class="w-full border-t border-white"></div>
+</div>
+<!-- Bars -->
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-primary rounded-t-sm hover:brightness-125 transition-all relative chart-path-glow" style="height: 120px;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container border border-white/10 px-2 py-1 rounded text-[10px] font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">$940</div>
+</div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">JAN</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-primary/80 rounded-t-sm hover:brightness-125 transition-all relative chart-path-glow" style="height: 140px;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container border border-white/10 px-2 py-1 rounded text-[10px] font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">$1,120</div>
+</div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">FEB</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-primary/60 rounded-t-sm hover:brightness-125 transition-all relative chart-path-glow" style="height: 180px;">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-surface-container border border-white/10 px-2 py-1 rounded text-[10px] font-bold text-white opacity-0 group-hover:opacity-100 transition-opacity">$1,450</div>
+</div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">MAR</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-primary/90 rounded-t-sm hover:brightness-125 transition-all relative chart-path-glow" style="height: 110px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">APR</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-primary/70 rounded-t-sm hover:brightness-125 transition-all relative" style="height: 130px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">MAY</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-primary rounded-t-sm hover:brightness-125 transition-all relative chart-path-glow" style="height: 200px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">JUN</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-white/10 rounded-t-sm hover:brightness-125 transition-all relative" style="height: 115px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">JUL</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-white/10 rounded-t-sm hover:brightness-125 transition-all relative" style="height: 125px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">AUG</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-white/10 rounded-t-sm hover:brightness-125 transition-all relative" style="height: 160px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">SEP</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-white/10 rounded-t-sm hover:brightness-125 transition-all relative" style="height: 105px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">OCT</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-white/10 rounded-t-sm hover:brightness-125 transition-all relative" style="height: 115px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">NOV</span>
+</div>
+<div class="flex flex-col items-center gap-2 group w-full">
+<div class="w-8 md:w-12 bg-white/10 rounded-t-sm hover:brightness-125 transition-all relative" style="height: 190px;"></div>
+<span class="text-[10px] font-label-mono text-on-surface-variant">DEC</span>
+</div>
+</div>
+</div>
+<!-- Yield Alerts / Top Earners List -->
+<div class="col-span-12 lg:col-span-4 glass-card rounded-xl flex flex-col h-full">
+<div class="p-md border-b border-white/5">
+<h4 class="font-headline-lg text-lg text-white">Top Yield Drivers</h4>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-sm space-y-2">
+<!-- Driver 1 -->
+<div class="bg-white/5 border border-white/5 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/20 rounded flex items-center justify-center text-primary font-bold">O</div>
+<div>
+<p class="text-sm font-bold text-white">Realty Income</p>
+<p class="text-[10px] text-on-surface-variant font-label-mono">Monthly Payer</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-secondary">5.82%</p>
+<p class="text-[10px] text-on-surface-variant">$1,240/yr</p>
+</div>
+</div>
+<!-- Driver 2 -->
+<div class="bg-white/5 border border-white/5 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/20 rounded flex items-center justify-center text-primary font-bold">ABBV</div>
+<div>
+<p class="text-sm font-bold text-white">AbbVie Inc.</p>
+<p class="text-[10px] text-on-surface-variant font-label-mono">Dividend Aristocrat</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-secondary">3.48%</p>
+<p class="text-[10px] text-on-surface-variant">$980/yr</p>
+</div>
+</div>
+<!-- Driver 3 -->
+<div class="bg-white/5 border border-white/5 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/20 rounded flex items-center justify-center text-primary font-bold">MAIN</div>
+<div>
+<p class="text-sm font-bold text-white">Main Street Capital</p>
+<p class="text-[10px] text-on-surface-variant font-label-mono">High Yield</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-secondary">6.91%</p>
+<p class="text-[10px] text-on-surface-variant">$850/yr</p>
+</div>
+</div>
+<!-- Driver 4 -->
+<div class="bg-white/5 border border-white/5 rounded-lg p-3 flex items-center justify-between hover:bg-white/10 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/20 rounded flex items-center justify-center text-primary font-bold">MO</div>
+<div>
+<p class="text-sm font-bold text-white">Altria Group</p>
+<p class="text-[10px] text-on-surface-variant font-label-mono">Dividend King</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-secondary">8.25%</p>
+<p class="text-[10px] text-on-surface-variant">$720/yr</p>
+</div>
+</div>
+</div>
+<div class="p-sm">
+<button class="w-full py-2 text-xs font-bold text-primary hover:bg-primary/10 rounded transition-colors">View All Holdings</button>
+</div>
+</div>
+</div>
+<!-- Footer Stats Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md pt-lg">
+<div class="flex items-center gap-4">
+<div class="p-3 rounded-full bg-secondary-container/10">
+<span class="material-symbols-outlined text-secondary">verified</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-label-mono">YIELD SECURITY SCORE</p>
+<p class="text-lg font-bold text-white">A- (Stable)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="p-3 rounded-full bg-primary/10">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-label-mono">NEXT PAYOUT</p>
+<p class="text-lg font-bold text-white">Mar 15 ($412.50)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="p-3 rounded-full bg-[#ff8fc6]/10">
+<span class="material-symbols-outlined text-tertiary">warning</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-label-mono">YIELD TRAPS DETECTED</p>
+<p class="text-lg font-bold text-white">0 Flags</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- FAB (Suppressed on Details/Settings but active here as primary dashboard tool) -->
+<button class="fixed bottom-lg right-lg w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-[70] group">
+<span class="material-symbols-outlined text-3xl">add</span>
+<span class="absolute right-full mr-4 bg-surface-container border border-white/10 px-4 py-2 rounded-lg text-sm font-bold text-white opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none transition-opacity">Add Transaction</span>
+</button>
+<!-- Mobile Navigation (Bottom Bar) -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 bg-surface/90 backdrop-blur-xl border-t border-white/10 px-md py-xs flex justify-between items-center z-[80]">
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-[10px]">Overview</span>
+</a>
+<a class="flex flex-col items-center text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="text-[10px] font-bold">Yield Map</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px]">Risk</span>
+</a>
+<a class="flex flex-col items-center text-on-surface-variant" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px]">Settings</span>
+</a>
+</div>
+<script>
+        // Simple interaction for treemap items
+        document.querySelectorAll('.cursor-pointer').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateY(-2px)';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateY(0px)';
+            });
+        });
+    </script>
+</body></html>

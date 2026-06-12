@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dividend Planning Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#0f172a; --card:#1e293b; --accent:#38bdf8; --accent2:#34d399; --text:#e2e8f0; --muted:#94a3b8; --warn:#fbbf24; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:system-ui,Segoe UI,sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:32px 24px 0; border-bottom:1px solid #334155; }
+  h1 { margin:0; font-size:1.6rem; }
+  .sub { color:var(--muted); margin-top:4px; }
+  /* Tabs */
+  .tabs { display:flex; gap:4px; margin-top:20px; }
+  .tab { background:transparent; border:none; color:var(--muted); padding:12px 20px; font-size:0.98rem;
+    cursor:pointer; border-bottom:3px solid transparent; font-family:inherit; }
+  .tab:hover { color:var(--text); }
+  .tab.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+  main { max-width:1100px; margin:0 auto; padding:24px; }
+  .panel { display:none; }
+  .panel.active { display:block; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+  @media (max-width:760px){ .grid{ grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid #334155; border-radius:12px; padding:20px 24px; margin-bottom:20px; }
+  .card h2 { margin:0 0 12px; font-size:1.1rem; color:var(--accent); }
+  .card h3 { margin:18px 0 8px; font-size:0.98rem; color:var(--accent2); }
+  .empty { color:var(--muted); font-style:italic; }
+  .badge { display:inline-block; background:#334155; color:var(--text); border-radius:999px; padding:4px 12px; font-size:0.8rem; }
+  .badge.green { background:#064e3b; color:#6ee7b7; }
+  table { width:100%; border-collapse:collapse; font-size:0.92rem; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid #334155; }
+  th { color:var(--muted); font-weight:600; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .pill { display:inline-block; padding:2px 8px; border-radius:6px; font-size:0.78rem; background:#0b3a4a; color:#7dd3fc; }
+  .controls { margin:8px 0 14px; }
+  select { background:#0b1220; color:var(--text); border:1px solid #334155; border-radius:8px; padding:6px 10px; }
+  .kpi { font-size:1.7rem; font-weight:700; }
+  .kpi.small { font-size:1.15rem; }
+  .note { color:var(--muted); font-size:0.85rem; margin-top:8px; }
+  footer { text-align:center; color:var(--muted); padding:24px; font-size:0.85rem; }
+  ul { margin:6px 0; padding-left:20px; } li { margin:5px 0; }
+  .phase { border-left:3px solid var(--accent); padding-left:16px; margin:0 0 18px; }
+  .phase h3 { margin-top:0; }
+  .do { color:#6ee7b7; } .dont { color:#fca5a5; }
+  .checklist { list-style:none; padding-left:0; }
+  .checklist li::before { content:"☐ "; color:var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>📈 Long-Term Dividend Planning</h1>
+  <div class="sub">Plan 2 — Max Growth · <span class="badge green">Allocation set</span> · Last updated 2026-06-09</div>
+  <div class="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="gameplan">🎓 Game Plan</button>
+  </div>
+</header>
+<main>
+
+<!-- ===================== DASHBOARD TAB ===================== -->
+<section class="panel active" id="dashboard">
+
+  <div class="grid">
+    <div class="card">
+      <h2>Overview</h2>
+      <div class="kpi small">₱0 invested <span class="badge">no positions yet</span></div>
+      <p class="note">Allocation is locked in. Once you open DragonFi and make your first buy, tell me the
+      fund/ticker, units, price, and date — holdings and totals will fill in here.</p>
+      <p style="margin-top:14px"><strong>Contribution:</strong> ₱5,000 / week (~₱21,667 / mo · ₱260,000 / yr)<br>
+      <strong>Goals:</strong> Financial cushion by 35 (2037) · Kids'/family by 45 (2047)<br>
+      <strong>Risk:</strong> High · <strong>Horizon:</strong> 11–21 yrs</p>
+    </div>
+    <div class="card">
+      <h2>Target allocation</h2>
+      <canvas id="allocChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Holdings</h2>
+    <p class="empty">No positions funded yet — first buy pending.</p>
+    <table>
+      <thead><tr><th>Sleeve</th><th>Vehicle</th><th>Platform</th><th class="num">Target</th></tr></thead>
+      <tbody>
+        <tr><td>Global / US equity</td><td>BPI US Equity Index Feeder Fund (S&amp;P 500, PHP)</td><td>DragonFi</td><td class="num">90%</td></tr>
+        <tr><td>PH REITs (income)</td><td>AREIT now → 60/40 AREIT/CREIT later</td><td>DragonFi</td><td class="num">10%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Forecast — projected balance to ages 35 &amp; 45</h2>
+    <div class="controls">
+      Highlight rate:
+      <select id="rateSelect">
+        <option value="0.05">5% / yr (conservative)</option>
+        <option value="0.07" selected>7% / yr (moderate)</option>
+        <option value="0.10">10% / yr (optimistic)</option>
+      </select>
+    </div>
+    <canvas id="forecastChart" height="220"></canvas>
+    <table style="margin-top:16px">
+      <thead><tr><th>Scenario</th><th class="num">At 35 (2037)</th><th class="num">At 45 (2047)</th></tr></thead>
+      <tbody id="forecastTable"></tbody>
+    </table>
+    <p class="note">Total contributed: ₱2.86M by 35 · ₱5.46M by 45. <strong>Scenarios, not predictions.</strong>
+    Assumes a flat ₱5,000/week — in reality contributions should rise sharply once you're employed
+    after graduation, so these are conservative.</p>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Dividend income (REIT sleeve)</h2>
+      <p>PH REITs yield ~<strong>6–8%</strong>, paid quarterly. At the 10% target sleeve, dividends start
+      small and grow as the portfolio grows — reinvested, they compound.</p>
+      <p class="note">10% final withholding tax is auto-deducted by the REIT. Watch: REIT prices fall when
+      interest rates rise.</p>
+    </div>
+    <div class="card">
+      <h2>Tax notes (PH)</h2>
+      <ul>
+        <li>REIT / local dividends: <strong>10% final tax</strong> (auto-withheld).</li>
+        <li>Selling PSE shares: <strong>0.1%</strong> stock transaction tax (cut from 0.6% in Jul 2025).</li>
+        <li>Feeder fund (UITF) redemptions: generally <strong>not separately income-taxed</strong> for individuals.</li>
+        <li>Future US ETFs: US-domiciled = 30% dividend withholding + estate-tax watch &gt; ~$60k → prefer Irish-domiciled.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Account reference (non-secret)</h2>
+    <p><span class="pill">DragonFi</span> Primary — PSE stocks, REITs, PHP feeder funds, PERA. 0.25%+VAT, ~₱1,000 to start. <em>Status: planned, not yet opened.</em></p>
+    <p><span class="pill">IBKR</span> Future — Irish-domiciled ETFs (VWRA/CSPX) for the global core once employed (~late 2027).</p>
+    <p class="note">No passwords or account numbers are ever stored here.</p>
+  </div>
+
+</section>
+
+<!-- ===================== GAME PLAN TAB ===================== -->
+<section class="panel" id="gameplan">
+
+  <div class="card">
+    <h2>🎓 College Game Plan — June 2026 → Graduation (~late 2027)</h2>
+    <p><strong>The mindset:</strong> for the next ~18 months you're <strong>building the habit, not the
+    balance.</strong> The peso amounts are small now — the point is to install a system that runs for 20+
+    years once you're earning. Consistency beats optimization.</p>
+    <p class="note">Strategy: Plan 2 — Max Growth · 90% global equity / 10% PH REITs · ₱5,000/week.</p>
+  </div>
+
+  <div class="card">
+    <div class="phase">
+      <h3>Phase 0 — Setup (next 1–2 weeks, once)</h3>
+      <ul>
+        <li>Open a <strong>DragonFi</strong> account (₱1,000 to start) — one platform, both sleeves.</li>
+        <li><strong>Check the feeder fund fee</strong> in-app (sources ranged 0.55%–1.5%) and report it back.</li>
+        <li>Pick your <strong>contribution day</strong> = the day your allowance lands. Pay yourself the ₱5,000 first.</li>
+        <li>(Optional) Keep a tiny ₱2–3k cash buffer so a surprise expense never forces a sale.</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 1 — Monthly rhythm</h3>
+      <p>Buying weekly wastes commissions, so <strong>batch monthly</strong>. Each month (~₱20,000):</p>
+      <ul>
+        <li><strong>~₱18,000 → BPI US Equity Index Feeder Fund</strong> (the 90% growth engine)</li>
+        <li><strong>~₱2,000 → AREIT</strong> — buy when you've saved a board lot (100 sh ≈ ₱3,800), so ~every 1–2 months</li>
+        <li><strong>Reinvest every dividend</strong> the moment it lands — that's the compounding flywheel</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 2 — The discipline (what actually decides the outcome)</h3>
+      <ul>
+        <li class="do">✅ Move the ₱5,000 the instant the allowance arrives</li>
+        <li class="do">✅ Don't watch prices daily — dips just mean cheaper shares for you</li>
+        <li class="do">✅ Never sell the core — no timing, no panic; hold 10–20 years</li>
+        <li class="do">✅ Raise contributions whenever you can — a peso invested at 24 is your most valuable peso</li>
+        <li class="dont">❌ No chasing hot stocks / crypto / "guaranteed" tips — just the two sleeves</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 3 — Check-ins (with Claude, in this folder)</h3>
+      <ul>
+        <li><strong>Monthly:</strong> report what you bought → holdings + dashboard get updated</li>
+        <li>Say <strong>"run my update"</strong> every ~2 weeks for a full research/risk/forecast cycle</li>
+        <li>When the REIT sleeve passes <strong>~₱20–30k</strong> → add <strong>CREIT</strong> (60/40 AREIT/CREIT)</li>
+        <li><strong>Quarterly:</strong> rebalance check — steer fresh money to the underweight sleeve (don't sell)</li>
+      </ul>
+    </div>
+
+    <div class="phase">
+      <h3>Phase 4 — Graduation (~late 2027): level up 🚀</h3>
+      <ul>
+        <li>Raise contributions hard — this is when the plan gets serious</li>
+        <li>Build a real emergency fund (3–6 months) from salary, separate from investments</li>
+        <li>Open <strong>IBKR</strong> → move the global core into an Irish-domiciled ETF (VWRA/CSPX): 15% withholding, no US estate tax, lower fee</li>
+        <li>Re-run the whole strategy with your real income and updated goals</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>By graduation</h2>
+      <p>~78 weeks × ₱5,000 ≈ <strong>₱390,000 invested</strong>, plus growth — a real working portfolio,
+      and more importantly a habit you've proven you can keep. <em>That habit is the actual asset.</em></p>
+    </div>
+    <div class="card">
+      <h2>Milestones 🎯</h2>
+      <ul class="checklist">
+        <li>DragonFi opened + first ₱5,000 invested</li>
+        <li>First AREIT board lot bought</li>
+        <li>First dividend received (and reinvested)</li>
+        <li>Portfolio crosses ₱50,000</li>
+        <li>REIT sleeve hits ₱20k → add CREIT</li>
+        <li>Portfolio crosses ₱100,000</li>
+        <li>Graduation → IBKR opened, contributions raised</li>
+      </ul>
+    </div>
+  </div>
+
+</section>
+
+</main>
+<footer>Informational only — not licensed financial advice.</footer>
+
+<script>
+  // ---- Tab switching ----
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---- Data (inlined from profile.json / research_log.md on regeneration) ----
+  const ANNUAL_CONTRIB = 260000;   // PHP 5,000/week
+  const START_AGE = 24, AGE35 = 35, AGE45 = 45;
+  const RATES = [0.05, 0.07, 0.10];
+  const RATE_COLORS = {0.05:'#64748b', 0.07:'#38bdf8', 0.10:'#34d399'};
+
+  function fv(rate, years){ return years<=0?0: ANNUAL_CONTRIB * ((Math.pow(1+rate,years)-1)/rate); }
+
+  const years = [];
+  for(let a=START_AGE; a<=AGE45; a++) years.push(a);
+
+  new Chart(document.getElementById('allocChart'), {
+    type:'doughnut',
+    data:{ labels:['Global / US equity (90%)','PH REITs (10%)'],
+      datasets:[{ data:[90,10], backgroundColor:['#38bdf8','#34d399'], borderColor:'#1e293b', borderWidth:2 }] },
+    options:{ plugins:{ legend:{ labels:{ color:'#e2e8f0' } } } }
+  });
+
+  const datasets = RATES.map(r=>({
+    label:(r*100)+'% / yr',
+    data: years.map(a=>Math.round(fv(r, a-START_AGE))),
+    borderColor: RATE_COLORS[r], backgroundColor:'transparent',
+    borderWidth: r===0.07?3:1.5, tension:0.25, pointRadius:0
+  }));
+  const fmt = v => '₱'+(v/1e6).toFixed(2)+'M';
+  const forecastChart = new Chart(document.getElementById('forecastChart'), {
+    type:'line',
+    data:{ labels:years.map(a=>'age '+a), datasets },
+    options:{
+      plugins:{ legend:{ labels:{ color:'#e2e8f0' } },
+        tooltip:{ callbacks:{ label:c=>c.dataset.label+': '+fmt(c.parsed.y) } } },
+      scales:{ x:{ ticks:{ color:'#94a3b8', maxTicksLimit:8 }, grid:{ color:'#1f2b3d' } },
+        y:{ ticks:{ color:'#94a3b8', callback:v=>'₱'+(v/1e6).toFixed(1)+'M' }, grid:{ color:'#1f2b3d' } } }
+    }
+  });
+
+  const tbody = document.getElementById('forecastTable');
+  RATES.forEach(r=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML = `<td>${(r*100)}% / yr</td><td class="num">${fmt(fv(r,AGE35-START_AGE))}</td><td class="num">${fmt(fv(r,AGE45-START_AGE))}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('rateSelect').addEventListener('change', e=>{
+    const sel=parseFloat(e.target.value);
+    forecastChart.data.datasets.forEach((d,i)=>{ d.borderWidth = RATES[i]===sel?3:1; });
+    forecastChart.update();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Risk Assessment | DiviPlan Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0F0F10;
+            color: #e5e2e3;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: #1A1A1C;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-green { box-shadow: 0px 0px 12px rgba(74, 222, 128, 0.2); }
+        .glow-gold { box-shadow: 0px 0px 12px rgba(212, 175, 55, 0.2); }
+        .glow-red { box-shadow: 0px 0px 12px rgba(255, 116, 116, 0.2); }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Custom Chart Animation */
+        @keyframes grow { from { height: 0; } to { height: var(--final-height); } }
+        .chart-bar { animation: grow 1.5s ease-out forwards; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                "on-surface-variant": "#d0c5af",
+                "on-tertiary": "#620040",
+                "surface-container": "#201f20",
+                "surface-container-lowest": "#0e0e0f",
+                "surface-container-high": "#2a2a2b",
+                "background": "#131314",
+                "on-primary-fixed-variant": "#574500",
+                "secondary-fixed": "#6dfe9c",
+                "surface-bright": "#39393a",
+                "tertiary-fixed-dim": "#ffafd3",
+                "secondary-container": "#00b55d",
+                "tertiary-fixed": "#ffd8e7",
+                "secondary-fixed-dim": "#4de082",
+                "outline": "#99907c",
+                "on-tertiary-fixed-variant": "#85145a",
+                "surface": "#131314",
+                "secondary": "#4de082",
+                "primary-fixed": "#ffe088",
+                "on-tertiary-fixed": "#3d0026",
+                "on-error": "#690005",
+                "tertiary-container": "#ff8fc6",
+                "on-surface": "#e5e2e3",
+                "on-secondary-fixed": "#00210c",
+                "surface-tint": "#e9c349",
+                "on-tertiary-container": "#831258",
+                "primary-fixed-dim": "#e9c349",
+                "inverse-primary": "#735c00",
+                "surface-container-low": "#1c1b1c",
+                "outline-variant": "#4d4635",
+                "tertiary": "#ffbbd9",
+                "primary-container": "#d4af37",
+                "on-secondary-container": "#003e1c",
+                "on-primary": "#3c2f00",
+                "primary": "#f2ca50",
+                "inverse-surface": "#e5e2e3",
+                "surface-variant": "#353436",
+                "surface-dim": "#131314",
+                "error-container": "#93000a",
+                "on-secondary": "#003919",
+                "on-secondary-fixed-variant": "#005227",
+                "on-primary-container": "#554300",
+                "inverse-on-surface": "#313031",
+                "on-error-container": "#ffdad6",
+                "error": "#ffb4ab",
+                "on-primary-fixed": "#241a00",
+                "surface-container-highest": "#353436",
+                "on-background": "#e5e2e3"
+              },
+              "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+              },
+              "spacing": {
+                "lg": "40px",
+                "gutter": "24px",
+                "margin-desktop": "48px",
+                "xs": "8px",
+                "sm": "16px",
+                "md": "24px",
+                "xl": "64px",
+                "margin-mobile": "16px",
+                "base": "4px"
+              },
+              "fontFamily": {
+                "headline-lg": ["Hanken Grotesk"],
+                "body-md": ["Inter"],
+                "label-mono": ["JetBrains Mono"],
+                "display-lg": ["Hanken Grotesk"]
+              },
+              "fontSize": {
+                "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "label-mono": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Sidebar Navigation -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface-container border-r border-white/10 flex flex-col py-md px-sm z-40 hidden md:flex">
+<div class="mb-xl px-sm">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary">DiviPlan Pro</h1>
+<p class="text-on-surface-variant font-label-mono text-[10px] uppercase tracking-widest">Wealth Intelligence</p>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 py-3 text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Overview</span>
+</a>
+<a class="flex items-center gap-3 py-3 text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-body-md text-body-md">Performance</span>
+</a>
+<a class="flex items-center gap-3 py-3 text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="font-body-md text-body-md">Yield Map</span>
+</a>
+<a class="flex items-center gap-3 py-3 text-primary font-bold border-l-4 border-primary pl-4 bg-primary/5 transition-all duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="font-body-md text-body-md">Risk Assessment</span>
+</a>
+<a class="flex items-center gap-3 py-3 text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-body-md text-body-md">Tax Planner</span>
+</a>
+<a class="flex items-center gap-3 py-3 text-on-surface-variant pl-5 hover:bg-white/5 hover:text-on-surface transition-all duration-300 rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-sm">
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-bold active:scale-95 transition-all duration-200">
+                Upgrade to Pro
+            </button>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<main class="md:ml-64 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="w-full sticky top-0 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-sm z-50">
+<div class="flex justify-between items-center px-md py-xs w-full max-w-[1440px] mx-auto">
+<div class="flex items-center gap-md">
+<div class="md:hidden">
+<span class="material-symbols-outlined text-primary">menu</span>
+</div>
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-sm">search</span>
+<input class="bg-surface-container-lowest border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-1 focus:ring-primary focus:bg-surface-container-high transition-all" placeholder="Search Risk Profiles..." type="text"/>
+</div>
+<div class="hidden lg:flex items-center gap-sm ml-sm">
+<a class="text-on-surface-variant font-body-md text-body-md hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-md text-body-md" href="#">Risk Management</a>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full border-2 border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-white/10">
+<img alt="User profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX1UheM5r-Nth_hANOYXNhruqZXafaIXRWEi76JYqm5CtM45UA7FZXvfIqu3aa7vRhKyeZrsJQdHZhxzqMEl0-goQHGnf_A6ycXxA4_xJPxQSGONv3UFRbj698IvkXnNK8fJQM3ZRdjvK44Lgq-T4GElXvUK6a66JDlkYGB6KBTYI4dTQDAAFtPT_RdUjAuvQySpzzQ4AnA_RAJP1zRoSCrdEmUwDibj8hkKVJEB110vDwvvCO0FNoLvMBd7Nh3UrRits3PN_sAaSL"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Scrollable Canvas -->
+<section class="p-md lg:p-lg max-w-[1440px] mx-auto space-y-md">
+<!-- Page Title Area -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-md mb-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Risk Assessment</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Quantifying exposure and testing portfolio resilience.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-2 glass-card rounded-lg font-label-mono text-on-surface border border-white/5 hover:bg-white/10 transition-colors">EXPORT REPORT</button>
+<button class="px-md py-2 bg-primary text-on-primary rounded-lg font-bold glow-gold active:scale-95 transition-transform">RUN SIMULATION</button>
+</div>
+</div>
+<!-- Dashboard Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Volatility Meter -->
+<div class="md:col-span-4 glass-card p-md rounded-xl flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<p class="font-label-mono text-on-surface-variant uppercase text-[10px]">Current Volatility</p>
+<span class="bg-secondary-container/20 text-secondary text-[10px] px-2 py-1 rounded font-bold">STABLE</span>
+</div>
+<div class="py-lg relative flex flex-col items-center">
+<div class="relative w-48 h-24 overflow-hidden">
+<div class="absolute inset-0 w-48 h-48 border-[16px] border-surface-container-high rounded-full"></div>
+<div class="absolute inset-0 w-48 h-48 border-[16px] border-transparent border-t-secondary border-r-secondary rounded-full transform rotate-[-45deg] glow-green"></div>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 text-center">
+<span class="font-display-lg text-display-lg block leading-none">12.4%</span>
+<span class="text-on-surface-variant font-label-mono text-[10px]">VIX RELATIVE</span>
+</div>
+</div>
+</div>
+<div class="flex justify-between text-[11px] font-label-mono text-on-surface-variant pt-xs border-t border-white/5">
+<span>LOW (8%)</span>
+<span>AVG (15%)</span>
+<span>HIGH (28%)</span>
+</div>
+</div>
+<!-- Diversification Chart (Sector) -->
+<div class="md:col-span-8 glass-card p-md rounded-xl">
+<div class="flex justify-between items-center mb-md">
+<p class="font-label-mono text-on-surface-variant uppercase text-[10px]">Sector Diversification</p>
+<div class="flex gap-xs">
+<button class="text-[10px] px-2 py-1 bg-primary/10 text-primary border border-primary/20 rounded">SECTOR</button>
+<button class="text-[10px] px-2 py-1 text-on-surface-variant hover:bg-white/5 rounded transition-colors">ASSET CLASS</button>
+</div>
+</div>
+<div class="flex flex-col gap-sm">
+<!-- Custom Animated Bar Chart -->
+<div class="space-y-4">
+<div class="group">
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-on-surface">Information Technology</span>
+<span class="font-label-mono">32.4%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="chart-bar h-full bg-primary glow-gold rounded-full" style="width: 32.4%; --final-height: 100%;"></div>
+</div>
+</div>
+<div class="group">
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-on-surface">Financial Services</span>
+<span class="font-label-mono">21.8%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="chart-bar h-full bg-secondary glow-green rounded-full" style="width: 21.8%; --final-height: 100%;"></div>
+</div>
+</div>
+<div class="group">
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-on-surface">Healthcare</span>
+<span class="font-label-mono">15.2%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="chart-bar h-full bg-tertiary-container rounded-full" style="width: 15.2%; --final-height: 100%;"></div>
+</div>
+</div>
+<div class="group">
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-on-surface">Consumer Defensive</span>
+<span class="font-label-mono">10.6%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="chart-bar h-full bg-outline rounded-full" style="width: 10.6%; --final-height: 100%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Risk Factors List -->
+<div class="md:col-span-6 glass-card p-md rounded-xl overflow-hidden relative">
+
+<p class="font-label-mono text-on-surface-variant uppercase text-[10px] mb-md relative z-10">Identified Risk Factors</p>
+<div class="space-y-sm relative z-10">
+<div class="flex items-center gap-md p-sm bg-surface-container-low/50 rounded-lg border border-white/5">
+<div class="w-10 h-10 rounded-full bg-error-container/20 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">warning</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Concentration Risk</h4>
+<p class="text-[11px] text-on-surface-variant">Top 3 holdings exceed 25% of total value.</p>
+</div>
+<span class="text-[10px] font-bold text-error glow-red px-2 py-0.5 border border-error/30 rounded uppercase">High</span>
+</div>
+<div class="flex items-center gap-md p-sm bg-surface-container-low/50 rounded-lg border border-white/5">
+<div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">trending_down</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Sector Skew</h4>
+<p class="text-[11px] text-on-surface-variant">Tech exposure is 2x benchmark average.</p>
+</div>
+<span class="text-[10px] font-bold text-primary glow-gold px-2 py-0.5 border border-primary/30 rounded uppercase">Med</span>
+</div>
+<div class="flex items-center gap-md p-sm bg-surface-container-low/50 rounded-lg border border-white/5">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">verified_user</span>
+</div>
+<div class="flex-1">
+<h4 class="text-sm font-bold text-on-surface">Yield Sustainability</h4>
+<p class="text-[11px] text-on-surface-variant">80% of dividends covered by FCF.</p>
+</div>
+<span class="text-[10px] font-bold text-secondary glow-green px-2 py-0.5 border border-secondary/30 rounded uppercase">Low</span>
+</div>
+</div>
+</div>
+<!-- 'What-If' Scenario Builder -->
+<div class="md:col-span-6 glass-card p-md rounded-xl">
+<p class="font-label-mono text-on-surface-variant uppercase text-[10px] mb-md">What-If Scenario Simulation</p>
+<div class="space-y-md">
+<div class="space-y-xs">
+<label class="block text-[11px] text-on-surface-variant font-bold">Select Stress Test</label>
+<select class="w-full bg-background border border-white/10 rounded-lg px-3 py-2 text-sm text-on-surface focus:ring-1 focus:ring-primary appearance-none">
+<option>2008 Financial Crisis Recurrence</option>
+<option>Tech Sector Bubble Burst (-40%)</option>
+<option>Interest Rate Spike (+300bps)</option>
+<option>Global Supply Chain Freeze</option>
+</select>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="p-sm bg-surface-container-high/50 rounded-lg text-center border border-white/5">
+<p class="text-[10px] text-on-surface-variant mb-1">Portfolio Drawdown</p>
+<p class="text-xl font-bold text-error">-18.4%</p>
+</div>
+<div class="p-sm bg-surface-container-high/50 rounded-lg text-center border border-white/5">
+<p class="text-[10px] text-on-surface-variant mb-1">Income Impact</p>
+<p class="text-xl font-bold text-primary">-4.2%</p>
+</div>
+</div>
+<div class="pt-sm">
+<div class="flex justify-between text-[11px] mb-2">
+<span class="text-on-surface-variant">Confidence Level</span>
+<span class="text-secondary font-bold">95% (VAR)</span>
+</div>
+<div class="h-1 w-full bg-surface-container-high rounded-full">
+<div class="h-full bg-secondary rounded-full" style="width: 95%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Asset Class Visualizer (Large Image) -->
+<div class="md:col-span-12 glass-card rounded-xl overflow-hidden relative h-[300px]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-40" data-alt="A sophisticated financial visualization overlaying a futuristic dark-themed trading desk. High-resolution data streams and glowing holographic charts float in the foreground, illuminated with vibrant gold and emerald green accents. The overall atmosphere is cinematic and professional, using deep obsidian blacks and glassmorphic layers to create a sense of advanced wealth intelligence and institutional security." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtTFLEMfO1l4It8a93N1bn12eY1M0fnSMDsc6HLXdVmPMuOhlV-N7_AX-PZV8RTo59h-IWu_mQna_YFj7v38uAbmb4jU2gbpOclwUtSU6KQjW1YMMD21IL4y3RsM6_2vB1DJTs0yeoznNJprsPHX6gGeJ-8eMUZkIDQ8XytplCYSkzRXBlDj1zGrsF3nYSPVbLNzhWQ48J5E1G26fdckZJCgsLkeHKksI7m2oXcCFVErL4GYFtCusZyIrMtisu7kUVyupKvRQVT0qX"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+<div class="absolute bottom-md left-md right-md flex flex-col md:flex-row justify-between items-end gap-md">
+<div class="max-w-xl">
+<h3 class="text-xl font-bold mb-1">Asset Allocation Strategy</h3>
+<p class="text-sm text-on-surface-variant">Your portfolio is currently overweight in equities. Consider rebalancing into Fixed Income or Alternatives to align with your 'Conservative Growth' profile target.</p>
+</div>
+<div class="flex gap-sm">
+<div class="flex flex-col items-center px-4 py-2 bg-surface-container/80 backdrop-blur-md rounded-lg border border-white/5">
+<span class="font-label-mono text-[10px] text-on-surface-variant">BETA</span>
+<span class="text-lg font-bold">1.12</span>
+</div>
+<div class="flex flex-col items-center px-4 py-2 bg-surface-container/80 backdrop-blur-md rounded-lg border border-white/5">
+<span class="font-label-mono text-[10px] text-on-surface-variant">ALPHA</span>
+<span class="text-lg font-bold text-secondary">+2.4</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer Padding for Mobile Nav -->
+<div class="h-24 md:hidden"></div>
+</main>
+<!-- Mobile Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 right-0 bg-surface-container/90 backdrop-blur-lg border-t border-white/10 px-md py-sm flex justify-between items-center md:hidden z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-xl">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-xl">trending_up</span>
+<span class="text-[10px] font-medium">Trends</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="text-[10px] font-bold">Risk</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-xl">person</span>
+<span class="text-[10px] font-medium">Account</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for Hover states and dynamic chart updates
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = 'rgba(242, 202, 80, 0.3)';
+                card.style.transition = 'border-color 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+            });
+        });
+
+        // Simple logic for the 'What-If' builder visual feedback
+        const select = document.querySelector('select');
+        const drawdownValue = document.querySelector('.text-error');
+        
+        select.addEventListener('change', (e) => {
+            const values = {
+                '2008 Financial Crisis Recurrence': '-18.4%',
+                'Tech Sector Bubble Burst (-40%)': '-22.1%',
+                'Interest Rate Spike (+300bps)': '-6.8%',
+                'Global Supply Chain Freeze': '-12.5%'
+            };
+            
+            drawdownValue.style.opacity = '0';
+            setTimeout(() => {
+                drawdownValue.textContent = values[e.target.value] || '-18.4%';
+                drawdownValue.style.opacity = '1';
+                drawdownValue.style.transition = 'opacity 0.3s ease';
+            }, 200);
+        });
+    </script>
+</body></html>
